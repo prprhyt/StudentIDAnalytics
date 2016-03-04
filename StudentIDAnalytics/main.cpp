@@ -54,12 +54,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
 
 BOOL InitInstance(HWND hwnd,HINSTANCE hInstance)
 {
-	WCHAR	*szTitle = _T("SIDAcs");	 //TitleBarText
+	WCHAR	*szTitle = _T("StudnetID Analytics");	 //TitleBarText
 	WCHAR	szWindowClass[512];		//WindowClassName
 	lstrcpy(szWindowClass, _T("SIDAcs"));
 	MyRegisterClass(hInstance, szWindowClass);
 
-	hwnd = CreateWindow(szTitle, szWindowClass,WS_OVERLAPPEDWINDOW | WS_VISIBLE,CW_USEDEFAULT, CW_USEDEFAULT,CW_USEDEFAULT, CW_USEDEFAULT,NULL, NULL,hInstance, NULL);
+	hwnd = CreateWindow(szWindowClass, szTitle,WS_OVERLAPPEDWINDOW | WS_VISIBLE,CW_USEDEFAULT, CW_USEDEFAULT,CW_USEDEFAULT, CW_USEDEFAULT,NULL, NULL,hInstance, NULL);
 
 	if (!hwnd)
 	{
