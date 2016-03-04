@@ -1,11 +1,14 @@
-#include<windows.h>
-
+#include<Windows.h>
+#include"felicalib_wrapper\felicalib_sidacs_wrapper.hpp"
 #define _T TEXT
 
 
 ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass);
 BOOL InitInstance(HWND hwnd, HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+
+//Global variables
+felicalib_wrapper flib_wrapper;
 
 int WINAPI WinMain(
 	HINSTANCE hInstance,
@@ -71,17 +74,20 @@ BOOL InitInstance(HWND hwnd,HINSTANCE hInstance)
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	HDC hdc;
-	LPTSTR lptStr = _T("SIDAcs");
+	WCHAR StudentID[32];
 	switch (msg) {
 	case WM_CREATE:
-
+		flib_wrapper.init_felica();
 		break;
 	case WM_DESTROY:
+		flib_wrapper.destroy_felica();
 		PostQuitMessage(0);
 		return 0;
 	case WM_LBUTTONDOWN:
 		hdc = GetDC(hwnd);
-		TextOut(hdc, 10, 10, lptStr, lstrlen(lptStr));
+		if (!flib_wrapper.read_data(StudentID)) {
+			TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
+		}
 		ReleaseDC(hwnd, hdc);
 		return 0;
 	}

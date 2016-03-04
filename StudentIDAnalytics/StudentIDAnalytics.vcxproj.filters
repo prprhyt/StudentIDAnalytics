@@ -30,11 +30,11 @@
     <ClCompile Include="felicalib\felicalib.c">
       <Filter>ソース ファイル\felicalib</Filter>
     </ClCompile>
-    <ClCompile Include="main.c">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="felicalib_wrapper\felicalib_sidacs_wrapper.cpp">
       <Filter>ソース ファイル\felicalib_wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

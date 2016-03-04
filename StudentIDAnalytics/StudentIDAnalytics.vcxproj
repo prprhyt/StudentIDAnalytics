@@ -144,7 +144,7 @@
   <ItemGroup>
     <ClCompile Include="felicalib\felicalib.c" />
     <ClCompile Include="felicalib_wrapper\felicalib_sidacs_wrapper.cpp" />
-    <ClCompile Include="main.c" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="felicalib\felicaint.h" />
