@@ -55,7 +55,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
 BOOL InitInstance(HWND hwnd,HINSTANCE hInstance)
 {
 	WCHAR	*szTitle = _T("StudnetID Analytics");	 //TitleBarText
-	WCHAR	szWindowClass[512];		//WindowClassName
+	WCHAR	szWindowClass[512];		                 //WindowClassName
 	lstrcpy(szWindowClass, _T("SIDAcs"));
 	MyRegisterClass(hInstance, szWindowClass);
 
@@ -82,14 +82,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	case WM_DESTROY:
 		flib_wrapper.destroy_felica();
 		PostQuitMessage(0);
-		return 0;
+		break;
 	case WM_LBUTTONDOWN:
+		student_id_details sids;
 		hdc = GetDC(hwnd);
 		if (!flib_wrapper.read_data(StudentID)) {
 			TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
+			sids.get_student_id_details(StudentID);
 		}
 		ReleaseDC(hwnd, hdc);
-		return 0;
+		break;
+	case WM_PAINT:
+		hdc = GetDC(hwnd);
+
+		ReleaseDC(hwnd, hdc);
+		break;
 	}
 	return DefWindowProc(hwnd, msg, wp, lp);
 }

@@ -20,4 +20,17 @@ public:
 	void destroy_felica();
 
 };
+
+class student_id_details {
+public:
+	int enter_ad;
+	char enter_semester;
+	char dept[3];
+	int class_num;
+	int seminar_num;
+	int personal_num;
+
+	int get_student_id_details(WCHAR[]);
+};
+
 #endif

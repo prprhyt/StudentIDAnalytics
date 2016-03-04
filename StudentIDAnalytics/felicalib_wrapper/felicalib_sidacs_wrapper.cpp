@@ -2,7 +2,6 @@
 
 int felicalib_wrapper::init_felica() {
 	p = pasori_open(NULL);
-	p = pasori_open(NULL);
 	if (!p) {
 		//TODO:エラー用のメソッドを作成する(MessageBoxとログの出力)
 		MessageBox(NULL, _T("PaSoRi open failed.\n\rQuits the app."),_T("Error"),MB_OK);
@@ -60,7 +59,7 @@ int felicalib_wrapper::read_data(WCHAR rcvdata[]) {
 			felica_free(f2);
 			return -1;
 		}
-		sprintf(temp_data, "%s", data);//unsigned char -> char
+		std::sprintf(temp_data, "%s", data);//unsigned char -> char
 		mbstowcs(rcvdata, temp_data, sizeof(temp_data));//char -> WCHAR
 		felica_free(f2);
 	}else {
@@ -72,4 +71,20 @@ int felicalib_wrapper::read_data(WCHAR rcvdata[]) {
 void felicalib_wrapper::destroy_felica() {
 	felica_free(f);
 	pasori_close(p);
+}
+
+int student_id_details::get_student_id_details(WCHAR rcvdata[]) {
+	char temp_data[16];
+	char temp_char[3];
+	wcstombs(temp_data, rcvdata, sizeof(rcvdata)*sizeof(WCHAR));
+	temp_data[8] = '\0';
+	enter_ad = temp_data[0] - '0';
+	enter_semester = temp_data[1];
+	strncpy(dept, temp_data + 2, 2);
+	dept[2] = '\0';
+	class_num = temp_data[4] - '0';
+	seminar_num = temp_data[5] - '0';
+	strncpy(temp_char, temp_data + 6, 2);
+	temp_char[2] = '\0';
+	personal_num = atoi(temp_char);
 }
