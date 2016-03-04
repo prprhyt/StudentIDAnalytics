@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\felicalib">
+      <UniqueIdentifier>{7ac78251-8a0d-411c-9f6e-416787ebc35b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\felicalib">
+      <UniqueIdentifier>{033f5cbf-dd95-4d58-8ff8-f5ed5c670378}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\felicalib_wrapper">
+      <UniqueIdentifier>{3fc7b026-7f6e-4f8e-b1b1-44a2876f37ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\felicalib_wrapper">
+      <UniqueIdentifier>{be37b17d-f4e2-4d1a-a2b2-5cdba613df42}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="felicalib\felicalib.c">
+      <Filter>ソース ファイル\felicalib</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="felicalib_wrapper\felicalib_sidacs_wrapper.cpp">
+      <Filter>ソース ファイル\felicalib_wrapper</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="felicalib\felicalib.h">
+      <Filter>ヘッダー ファイル\felicalib</Filter>
+    </ClInclude>
+    <ClInclude Include="felicalib\felicaint.h">
+      <Filter>ヘッダー ファイル\felicalib</Filter>
+    </ClInclude>
+    <ClInclude Include="felicalib_wrapper\felicalib_sidacs_wrapper.hpp">
+      <Filter>ヘッダー ファイル\felicalib_wrapper</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
