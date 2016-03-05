@@ -1,14 +1,16 @@
 #include<Windows.h>
 #include"felicalib_wrapper\felicalib_sidacs_wrapper.hpp"
-#define _T TEXT
 
 
 ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass);
 BOOL InitInstance(HWND hwnd, HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+DWORD WINAPI pasori_thread_(LPVOID	hwnd);
 
 //Global variables
 felicalib_wrapper flib_wrapper;
+student_id_data_node* o_node(nullptr);
+student_id_data_tree sidt;
 
 int WINAPI WinMain(
 	HINSTANCE hInstance,
@@ -75,25 +77,26 @@ BOOL InitInstance(HWND hwnd,HINSTANCE hInstance)
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	HDC hdc;
 	WCHAR StudentID[32];
+
+	//mthread
+	static HANDLE	mThread;
+	static DWORD TId;
+
 	switch (msg) {
 	case WM_CREATE:
 		flib_wrapper.init_felica();
+		o_node = sidt.create_node("origin");
+		//マルチスレッド
+		mThread = CreateThread(NULL, 0, pasori_thread_, hwnd, 0, &TId);
 		break;
 	case WM_DESTROY:
+		CloseHandle(mThread);
 		flib_wrapper.destroy_felica();
+		o_node = sidt.delete_node(o_node);
 		PostQuitMessage(0);
 		break;
 	case WM_LBUTTONDOWN:
-		student_id_data_node* o_node;
-		student_id_data_tree sidt;
-		o_node = sidt.create_node("origin");
-		hdc = GetDC(hwnd);
-		if (!flib_wrapper.read_data(StudentID)) {
-			TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
-			sidt.add_tree_student_id(o_node, StudentID);
-		}
-		sidt.delete_data(o_node);
-		ReleaseDC(hwnd, hdc);
+
 		break;
 	case WM_PAINT:
 		hdc = GetDC(hwnd);
@@ -102,4 +105,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		break;
 	}
 	return DefWindowProc(hwnd, msg, wp, lp);
+}
+
+DWORD WINAPI pasori_thread_(LPVOID	hwnd){//マルチスレッドで学生IDの読み取り待機
+	int zero_is_continue = 0;
+	HDC hdc;
+	WCHAR StudentID[32];
+	while (!zero_is_continue) {
+		//InvalidateRect(static_cast<HWND>(hwnd), NULL, FALSE);
+		hdc = GetDC(static_cast<HWND>(hwnd));
+		if (!flib_wrapper.read_data(StudentID)) {
+			TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
+			sidt.add_tree_student_id(o_node, StudentID);
+		}
+		ReleaseDC(static_cast<HWND>(hwnd), hdc);
+		Sleep(100);
+	}
+
+	return 0;
 }

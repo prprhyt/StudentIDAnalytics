@@ -73,6 +73,7 @@ int felicalib_wrapper::read_data(WCHAR rcvdata[]) {
 void felicalib_wrapper::destroy_felica() {
 	felica_free(f);
 	pasori_close(p);
+	return;
 }
 
 int student_id_details::get_student_id_details(WCHAR rcvdata[]) {
@@ -109,7 +110,7 @@ int student_id_details::get_student_id_details(WCHAR rcvdata[]) {
 
 student_id_data_node* student_id_data_tree::create_node(char label[]) {
 	student_id_data_node* new_node = new student_id_data_node;
-	if(NULL==new_node){
+	if(nullptr==new_node){
 		exit(1);
 	}
 	new_node->child_node_num = 0;
@@ -121,6 +122,7 @@ void student_id_data_tree::add_personal_num_list(student_id_data_node *node, int
 	vector<int>::iterator itror = lower_bound(node->personal_id.begin(), node->personal_id.end(), label);
 	node->personal_id.insert(itror, label);
 	unique(node->personal_id.begin(), node->personal_id.end());//d•¡íœ
+	return;
 }
 
 int student_id_data_tree::add_tree_node(student_id_data_node *node, student_id_details sids) {
@@ -148,13 +150,18 @@ int student_id_data_tree::add_tree_node(student_id_data_node *node, student_id_d
 	return 0;
 }
 
-void student_id_data_tree::delete_data(student_id_data_node *node) {
+student_id_data_node* student_id_data_tree::delete_node(student_id_data_node *node) {
+	if (nullptr == node) {
+		return nullptr;
+	}
 	for (int i = 0; i < node->child_node_num; ++i) {
-		delete_data(node->nodes[i]);
+		delete_node(node->nodes[i]);
 	}
 	vector<student_id_data_node*>().swap(node->nodes);
 	vector<int>().swap(node->personal_id);
 	delete node;
+	node = nullptr;
+	return nullptr;
 }
 
 void student_id_data_tree::add_tree_student_id(student_id_data_node *node,WCHAR rcvdata[]) {
@@ -162,4 +169,5 @@ void student_id_data_tree::add_tree_student_id(student_id_data_node *node,WCHAR 
 	sids.get_student_id_details(rcvdata);
 	sids.count = 0;
 	add_tree_node(node, sids);
+	return;
 }

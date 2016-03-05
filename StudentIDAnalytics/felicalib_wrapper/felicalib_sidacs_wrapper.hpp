@@ -53,7 +53,7 @@ private:
 public:
 	student_id_data_node* create_node(char[]);
 	void add_personal_num_list(student_id_data_node*, int);
-	void delete_data(student_id_data_node*);
+	student_id_data_node* delete_node(student_id_data_node*);
 	void add_tree_student_id(student_id_data_node*,WCHAR[]);
 };
 
