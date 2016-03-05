@@ -3,6 +3,7 @@
 #define STUDENT_ID_ANALYTICS_FELICALIB_SIDACS_WRAPPER_HPP
 #include<cstdio>
 #include<vector>
+#include <algorithm>
 #include<Windows.h>
 #include "../felicalib/felicalib.h"
 
@@ -42,6 +43,8 @@ public:
 	std::vector<student_id_data_node*> nodes;
 	int child_node_num;
 	char label[128];
+
+	std::vector<int> personal_id;
 };
 
 class student_id_data_tree {
@@ -49,7 +52,7 @@ private:
 	int add_tree_node(student_id_data_node*, student_id_details);//ツリーにノードを追加する
 public:
 	student_id_data_node* create_node(char[]);
-	void add_personal_num_list(student_id_data_node*, char[]);
+	void add_personal_num_list(student_id_data_node*, int);
 	void delete_data(student_id_data_node*);
 	void add_tree_student_id(student_id_data_node*,WCHAR[]);
 };

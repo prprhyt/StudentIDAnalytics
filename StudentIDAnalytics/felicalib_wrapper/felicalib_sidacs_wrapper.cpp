@@ -117,6 +117,12 @@ student_id_data_node* student_id_data_tree::create_node(char label[]) {
 	return new_node;
 }
 
+void student_id_data_tree::add_personal_num_list(student_id_data_node *node, int label) {
+	vector<int>::iterator itror = lower_bound(node->personal_id.begin(), node->personal_id.end(), label);
+	node->personal_id.insert(itror, label);
+	unique(node->personal_id.begin(), node->personal_id.end());//重複削除
+}
+
 int student_id_data_tree::add_tree_node(student_id_data_node *node, student_id_details sids) {
 	int child_node_num_temp = node->child_node_num;
 	int temp_index_num = -1;
@@ -132,14 +138,14 @@ int student_id_data_tree::add_tree_node(student_id_data_node *node, student_id_d
 		temp_index_num = child_node_num_temp - 1;
 	}
 	if (sids.count < 5) {
-		++(sids.count);
-		add_tree_node(node->nodes[temp_index_num], sids);
+		if ((sids.count)++ < 4) {
+			add_tree_node(node->nodes[temp_index_num], sids);
+		}
+		else {
+			add_personal_num_list(node->nodes[temp_index_num], sids.personal_num);
+		}
 	}
 	return 0;
-}
-
-void student_id_data_tree::add_personal_num_list(student_id_data_node *node, char label[]) {
-	//TODO:学生IDの下2桁を連結リストかVectorで管理する
 }
 
 void student_id_data_tree::delete_data(student_id_data_node *node) {
@@ -147,13 +153,12 @@ void student_id_data_tree::delete_data(student_id_data_node *node) {
 		delete_data(node->nodes[i]);
 	}
 	vector<student_id_data_node*>().swap(node->nodes);
+	vector<int>().swap(node->personal_id);
 	delete node;
 }
 
 void student_id_data_tree::add_tree_student_id(student_id_data_node *node,WCHAR rcvdata[]) {
 	student_id_details sids;
-	char temp_char[6][16];
-	int node_num = 0;
 	sids.get_student_id_details(rcvdata);
 	sids.count = 0;
 	add_tree_node(node, sids);
