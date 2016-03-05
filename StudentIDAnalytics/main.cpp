@@ -84,12 +84,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		PostQuitMessage(0);
 		break;
 	case WM_LBUTTONDOWN:
-		student_id_details sids;
+		student_id_data_node* o_node;
+		student_id_data_tree sidt;
+		o_node = sidt.create_node("origin");
 		hdc = GetDC(hwnd);
 		if (!flib_wrapper.read_data(StudentID)) {
 			TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
-			sids.get_student_id_details(StudentID);
+			sidt.add_tree_student_id(o_node, StudentID);
 		}
+		sidt.delete_data(o_node);
 		ReleaseDC(hwnd, hdc);
 		break;
 	case WM_PAINT:
