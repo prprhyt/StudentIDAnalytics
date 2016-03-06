@@ -111,12 +111,22 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd){//マルチスレッドで学生IDの読み取り待機
 	int zero_is_continue = 0;
 	HDC hdc;
 	WCHAR StudentID[32];
+	WCHAR ID_sum_wchar[32];
+	int id_sum_num = 0;
 	while (!zero_is_continue) {
 		//InvalidateRect(static_cast<HWND>(hwnd), NULL, FALSE);
 		hdc = GetDC(static_cast<HWND>(hwnd));
 		if (!flib_wrapper.read_data(StudentID)) {
 			TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
 			sidt.add_tree_student_id(o_node, StudentID);
+			sidt.add_tree_student_id(o_node, _T("4bjt1289"));
+			sidt.add_tree_student_id(o_node, _T("3bjt2194"));
+			sidt.add_tree_student_id(o_node, _T("5ajt2196"));
+			sidt.add_tree_student_id(o_node, _T("2bji1199"));
+			id_sum_num = sidt.get_number_of_student_id_by_word(o_node, _T("5?jt????"));
+			wsprintf(ID_sum_wchar, _T("%d"), id_sum_num);
+			TextOut(hdc, 10, 30, ID_sum_wchar, lstrlen(ID_sum_wchar));
+
 		}
 		ReleaseDC(static_cast<HWND>(hwnd), hdc);
 		Sleep(100);

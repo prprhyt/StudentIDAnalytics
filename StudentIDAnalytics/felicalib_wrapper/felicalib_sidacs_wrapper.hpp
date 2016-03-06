@@ -55,6 +55,8 @@ public:
 	void add_personal_num_list(student_id_data_node*, int);
 	student_id_data_node* delete_node(student_id_data_node*);
 	void add_tree_student_id(student_id_data_node*,WCHAR[]);
+	int search_tree_node(student_id_data_node *node, student_id_details sids);
+	int get_number_of_student_id_by_word(student_id_data_node*,WCHAR[]);
 };
 
 #endif
