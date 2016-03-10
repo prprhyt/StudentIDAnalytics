@@ -2,8 +2,9 @@
 #ifndef STUDENT_ID_ANALYTICS_FELICALIB_SIDACS_WRAPPER_HPP
 #define STUDENT_ID_ANALYTICS_FELICALIB_SIDACS_WRAPPER_HPP
 #include<cstdio>
+#include<iterator>
 #include<vector>
-#include <algorithm>
+#include<algorithm>
 #include<Windows.h>
 #include "../felicalib/felicalib.h"
 
@@ -42,7 +43,7 @@ class student_id_data_node {
 public:
 	std::vector<student_id_data_node*> nodes;
 	int child_node_num;
-	char label[128];
+	char label[16];
 
 	std::vector<int> personal_id;
 };
@@ -50,13 +51,15 @@ public:
 class student_id_data_tree {
 private:
 	int add_tree_node(student_id_data_node*, student_id_details);//ツリーにノードを追加する
+	void add_personal_num_list(student_id_data_node*, int);
+	int count_student_id_from_tree(student_id_data_node *node, student_id_details sids);
+	std::vector<std::wstring> enumerate_student_id_from_tree(student_id_data_node *node, student_id_details sids);
 public:
 	student_id_data_node* create_node(char[]);
-	void add_personal_num_list(student_id_data_node*, int);
 	student_id_data_node* delete_node(student_id_data_node*);
 	void add_tree_student_id(student_id_data_node*,WCHAR[]);
-	int search_tree_node(student_id_data_node *node, student_id_details sids);
 	int get_number_of_student_id_by_word(student_id_data_node*,WCHAR[]);
+	std::vector<std::wstring> get_list_of_student_id_by_word(student_id_data_node *node, WCHAR rcvdata[]);
 };
 
 #endif
