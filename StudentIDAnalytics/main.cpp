@@ -81,17 +81,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	//mthread
 	static HANDLE	mThread;
 	static DWORD TId;
+	static std::vector<std::wstring> students_id_lists;
 
 	switch (msg) {
 	case WM_CREATE:
 		flib_wrapper.init_felica();
 		o_node = sidt.create_node("origin");
+		sidt.restore_student_id_data(o_node);
+
 		//マルチスレッド
 		mThread = CreateThread(NULL, 0, pasori_thread_, hwnd, 0, &TId);
 		break;
 	case WM_DESTROY:
 		CloseHandle(mThread);
 		flib_wrapper.destroy_felica();
+		sidt.store_student_id_data(o_node);
 		o_node = sidt.delete_node(o_node);
 		PostQuitMessage(0);
 		break;

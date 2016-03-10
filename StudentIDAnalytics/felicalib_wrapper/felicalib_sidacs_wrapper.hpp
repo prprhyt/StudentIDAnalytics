@@ -6,6 +6,10 @@
 #include<vector>
 #include<algorithm>
 #include<Windows.h>
+#include <imagehlp.h>
+#pragma comment(lib,"imagehlp.lib")
+#include <shlwapi.h>
+#pragma comment(lib,"shlwapi.lib")
 #include "../felicalib/felicalib.h"
 
 #define _T TEXT
@@ -60,6 +64,8 @@ public:
 	void add_tree_student_id(student_id_data_node*,WCHAR[]);
 	int get_number_of_student_id_by_word(student_id_data_node*,WCHAR[]);
 	std::vector<std::wstring> get_list_of_student_id_by_word(student_id_data_node *node, WCHAR rcvdata[]);
+	int store_student_id_data(student_id_data_node*);
+	int restore_student_id_data(student_id_data_node*);
 };
 
 #endif

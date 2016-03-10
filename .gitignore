@@ -245,3 +245,5 @@ _Pvt_Extensions
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+StudentIDAnalytics/data/student_id.txt

@@ -121,7 +121,8 @@ student_id_data_node* student_id_data_tree::create_node(char label[]) {
 void student_id_data_tree::add_personal_num_list(student_id_data_node *node, int label) {
 	vector<int>::iterator itror = lower_bound(node->personal_id.begin(), node->personal_id.end(), label);
 	node->personal_id.insert(itror, label);
-	unique(node->personal_id.begin(), node->personal_id.end());//d•¡íœ
+	//d•¡íœ
+	node->personal_id.erase(unique(node->personal_id.begin(), node->personal_id.end()), node->personal_id.end());
 	return;
 }
 
@@ -309,4 +310,44 @@ vector<wstring> student_id_data_tree::get_list_of_student_id_by_word(student_id_
 
 	}
 	return students_id_list;
+}
+
+int student_id_data_tree::store_student_id_data(student_id_data_node *node) {
+	char dir_path[] = "data\\";
+	char file_path[MAX_PATH];
+	vector<wstring> students_id_list;
+	FILE *fp;
+	if (FALSE == PathIsDirectoryA(dir_path)) {
+		if (FALSE == MakeSureDirectoryPathExists(dir_path)) {
+			return -1;
+		}
+	}
+	sprintf(file_path, "%sstudent_id.txt", dir_path);
+	if (fopen_s(&fp, file_path, "w") != 0) {
+		return -1;
+	}
+	students_id_list = get_list_of_student_id_by_word(node, _T("????????"));
+	for (int i = 0; i < students_id_list.size(); i++) {
+		fwprintf_s(fp, _T("%s\n"),students_id_list[i].c_str());
+	}
+	fclose(fp);
+	return 0;
+}
+
+int student_id_data_tree::restore_student_id_data(student_id_data_node *node) {
+	char dir_path[] = "data\\";
+	char file_path[MAX_PATH];
+	WCHAR read_line[MAX_PATH];
+	FILE *fp;
+
+	sprintf(file_path, "%sstudent_id.txt", dir_path);
+	if (fopen_s(&fp, file_path, "r") != 0) {
+		return -1;
+	}
+
+	while(NULL != fgetws(read_line, MAX_PATH, fp)) {
+		add_tree_student_id(node, read_line);
+	}
+	fclose(fp);
+	return 0;
 }
