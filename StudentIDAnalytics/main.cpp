@@ -1,5 +1,6 @@
 #include<Windows.h>
 #include"felicalib_wrapper\felicalib_sidacs_wrapper.hpp"
+#include"class\draw\chart_wrapper.hpp"
 
 
 ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass);
@@ -11,6 +12,7 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd);
 felicalib_wrapper flib_wrapper;
 student_id_data_node* o_node(nullptr);
 student_id_data_tree sidt;
+donuts_chart d_chart(50, 50, 300);
 
 int WINAPI WinMain(
 	HINSTANCE hInstance,
@@ -83,19 +85,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	static DWORD TId;
 	static std::vector<std::wstring> students_id_lists;
 
+
 	switch (msg) {
 	case WM_CREATE:
 		flib_wrapper.init_felica();
 		o_node = sidt.create_node("origin");
 		sidt.restore_student_id_data(o_node);
-
 		//マルチスレッド
 		mThread = CreateThread(NULL, 0, pasori_thread_, hwnd, 0, &TId);
 		break;
 	case WM_DESTROY:
 		CloseHandle(mThread);
 		flib_wrapper.destroy_felica();
-		sidt.store_student_id_data(o_node);
+		//sidt.store_student_id_data(o_node);
 		o_node = sidt.delete_node(o_node);
 		PostQuitMessage(0);
 		break;
@@ -122,7 +124,7 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd){//マルチスレッドで学生IDの読み取り待機
 		//InvalidateRect(static_cast<HWND>(hwnd), NULL, FALSE);
 		hdc = GetDC(static_cast<HWND>(hwnd));
 		if (!flib_wrapper.read_data(StudentID)) {
-			TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
+			//TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
 			sidt.add_tree_student_id(o_node, StudentID);
 			sidt.add_tree_student_id(o_node, _T("4bjt1289"));
 			sidt.add_tree_student_id(o_node, _T("3bjt2194"));
@@ -131,11 +133,12 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd){//マルチスレッドで学生IDの読み取り待機
 			id_sum_num = sidt.get_number_of_student_id_by_word(o_node, _T("5?jt????"));
 			students_id_lists = sidt.get_list_of_student_id_by_word(o_node, _T("5?jt????"));
 			wsprintf(ID_sum_wchar, _T("%d"), id_sum_num);
-			TextOut(hdc, 10, 30, ID_sum_wchar, lstrlen(ID_sum_wchar));
-			for (int i = 0; i < students_id_lists.size(); ++i) {
+			//TextOut(hdc, 10, 30, ID_sum_wchar, lstrlen(ID_sum_wchar));
+			/*for (int i = 0; i < students_id_lists.size(); ++i) {
 				TextOut(hdc, 10, 50+i*20, students_id_lists[i].c_str(), lstrlen(students_id_lists[i].c_str()));
-			}
-
+			}*/
+			d_chart.set_chart_elements(o_node, _T("--??----"));
+			d_chart.draw_donuts_chart(hdc);
 		}
 		ReleaseDC(static_cast<HWND>(hwnd), hdc);
 		Sleep(100);

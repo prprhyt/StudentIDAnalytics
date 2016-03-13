@@ -58,12 +58,14 @@ private:
 	void add_personal_num_list(student_id_data_node*, int);
 	int count_student_id_from_tree(student_id_data_node *node, student_id_details sids);
 	std::vector<std::wstring> enumerate_student_id_from_tree(student_id_data_node *node, student_id_details sids);
+	std::vector<std::wstring> enumerate_elements_from_tree(student_id_data_node *node, student_id_details sids);
 public:
 	student_id_data_node* create_node(char[]);
 	student_id_data_node* delete_node(student_id_data_node*);
 	void add_tree_student_id(student_id_data_node*,WCHAR[]);
 	int get_number_of_student_id_by_word(student_id_data_node*,WCHAR[]);
 	std::vector<std::wstring> get_list_of_student_id_by_word(student_id_data_node *node, WCHAR rcvdata[]);
+	std::vector<std::wstring> get_list_of_elements_name_by_word(student_id_data_node *node, WCHAR rcvdata[]);
 	int store_student_id_data(student_id_data_node*);
 	int restore_student_id_data(student_id_data_node*);
 };

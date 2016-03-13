@@ -25,6 +25,18 @@
     <Filter Include="ヘッダー ファイル\felicalib_wrapper">
       <UniqueIdentifier>{be37b17d-f4e2-4d1a-a2b2-5cdba613df42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\class">
+      <UniqueIdentifier>{fccc0a8a-8790-4f56-9ffc-48e7946c53b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\class\draw">
+      <UniqueIdentifier>{91574e2e-f15f-4e91-a47f-ec8533a44b51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\class">
+      <UniqueIdentifier>{5db65b46-c43f-4c22-8f5f-db9c448b3cbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\class\draw">
+      <UniqueIdentifier>{589897c7-0327-496d-b059-f7b3dabd6a65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="felicalib\felicalib.c">
@@ -36,6 +48,9 @@
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="class\draw\chart_wrapper.cpp">
+      <Filter>ソース ファイル\class\draw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="felicalib\felicalib.h">
@@ -46,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="felicalib_wrapper\felicalib_sidacs_wrapper.hpp">
       <Filter>ヘッダー ファイル\felicalib_wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="class\draw\chart_wrapper.hpp">
+      <Filter>ヘッダー ファイル\class\draw</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

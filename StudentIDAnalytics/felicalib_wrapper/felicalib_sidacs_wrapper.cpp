@@ -221,6 +221,17 @@ int student_id_data_tree::get_number_of_student_id_by_word(student_id_data_node 
 		if (sids.details_char[5][0] == '?' || sids.details_char[5][1] == '?') {
 			sprintf(sids.details_char[5], "%s", "?\0");
 		}
+		if (sids.details_char[2][0] == '-' || sids.details_char[2][1] == '-') {
+			sprintf(sids.details_char[2], "%s", "?\0");
+		}
+		if (sids.details_char[5][0] == '-' || sids.details_char[5][1] == '-') {
+			sprintf(sids.details_char[5], "%s", "-\0");
+		}
+		for (int i = 0; i < 6; ++i) {
+			if (!strcmp("-", sids.details_char[i])) {
+				sprintf(sids.details_char[i], "%s", "?\0");
+			}
+		}
 		sum_num = count_student_id_from_tree(node, sids);
 	}else {
 
@@ -304,12 +315,95 @@ vector<wstring> student_id_data_tree::get_list_of_student_id_by_word(student_id_
 		if (sids.details_char[5][0] == '?' || sids.details_char[5][1] == '?') {
 			sprintf(sids.details_char[5], "%s", "?\0");
 		}
-		students_id_list = enumerate_student_id_from_tree(node, sids);
+		students_id_list = enumerate_elements_from_tree(node, sids);
 	}
 	else {
 
 	}
 	return students_id_list;
+}
+
+vector<wstring> student_id_data_tree::enumerate_elements_from_tree(student_id_data_node *node, student_id_details sids) {
+	int child_node_num_temp = node->child_node_num;
+	vector<wstring> students_id_list;
+	int temp_sids_count = sids.count;
+	for (int i = 0; i < child_node_num_temp; ++i) {
+		vector<wstring> temp_studnets_id;
+		if (!strcmp("-", sids.details_char[sids.count])) { //Skip
+			++(sids.count);
+			temp_studnets_id = enumerate_elements_from_tree(node->nodes[i], sids);
+			copy(temp_studnets_id.begin(), temp_studnets_id.end(), back_inserter(students_id_list));
+			sids.count = temp_sids_count;
+		}
+		else if (!strcmp("?", sids.details_char[sids.count])) {
+			node->nodes[i]->label;
+			WCHAR temp_wchar[16];
+			mbstowcs(temp_wchar, node->nodes[i]->label, sizeof(node->nodes[i]->label));
+			students_id_list.push_back(temp_wchar);
+		}
+		else if (!strcmp(node->nodes[i]->label, sids.details_char[sids.count])) {
+			if ((sids.count)++ <= 4) {
+					temp_studnets_id = enumerate_elements_from_tree(node->nodes[i], sids);
+					copy(temp_studnets_id.begin(), temp_studnets_id.end(), back_inserter(students_id_list));
+			}
+			sids.count = temp_sids_count;
+			break;
+		}
+		vector<wstring>().swap(temp_studnets_id);
+	}
+
+	if (sids.count > 4) {
+		if (strcmp("-", sids.details_char[sids.count])) {
+			if (!strcmp("?", sids.details_char[sids.count])) {
+				for (int i = 0; i < node->personal_id.size(); ++i) {
+					WCHAR temp_wchar[16];
+					mbstowcs(temp_wchar, node->label, sizeof(node->label));
+					wsprintf(temp_wchar, _T("%s%d\0"), temp_wchar, node->personal_id[i]);
+					students_id_list.push_back(temp_wchar);
+				}
+			}
+			else {
+				if (binary_search(node->personal_id.begin(), node->personal_id.end(), atoi(sids.details_char[sids.count]))) {
+					char temp_char[16];
+					WCHAR temp_wchar[16];
+					sprintf(temp_char, "%s%s\0", node->label, sids.details_char[sids.count]);
+					mbstowcs(temp_wchar, temp_char, sizeof(temp_char));
+					students_id_list.push_back(temp_wchar);
+				}
+			}
+		}
+	}
+	students_id_list.erase(unique(students_id_list.begin(), students_id_list.end()), students_id_list.end());
+	return students_id_list;
+}
+vector<wstring> student_id_data_tree::get_list_of_elements_name_by_word(student_id_data_node *node, WCHAR rcvdata[]) {
+	student_id_details sids;
+	sids.count = 0;
+	vector<wstring> elements_name_list;
+	int data_len = lstrlen(rcvdata);
+	if (data_len < 8) {
+
+	}
+	else if (8 == data_len) {
+		sids.get_student_id_details(rcvdata);
+		if (sids.details_char[2][0] == '?' || sids.details_char[2][1] == '?') {
+			sprintf(sids.details_char[2], "%s", "?\0");
+		}
+		if (sids.details_char[5][0] == '?' || sids.details_char[5][1] == '?') {
+			sprintf(sids.details_char[5], "%s", "?\0");
+		}
+		if (sids.details_char[2][0] == '-' || sids.details_char[2][1] == '-') {
+			sprintf(sids.details_char[2], "%s", "-\0");
+		}
+		if (sids.details_char[5][0] == '-' || sids.details_char[5][1] == '-') {
+			sprintf(sids.details_char[5], "%s", "-\0");
+		}
+		elements_name_list = enumerate_elements_from_tree(node, sids);
+	}
+	else {
+
+	}
+	return elements_name_list;
 }
 
 int student_id_data_tree::store_student_id_data(student_id_data_node *node) {
@@ -327,7 +421,7 @@ int student_id_data_tree::store_student_id_data(student_id_data_node *node) {
 		return -1;
 	}
 	students_id_list = get_list_of_student_id_by_word(node, _T("????????"));
-	for (int i = 0; i < students_id_list.size(); i++) {
+	for (int i = 0; i < students_id_list.size(); ++i) {
 		fwprintf_s(fp, _T("%s\n"),students_id_list[i].c_str());
 	}
 	fclose(fp);
