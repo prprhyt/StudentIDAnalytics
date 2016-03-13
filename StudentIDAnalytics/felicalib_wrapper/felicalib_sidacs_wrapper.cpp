@@ -315,7 +315,7 @@ vector<wstring> student_id_data_tree::get_list_of_student_id_by_word(student_id_
 		if (sids.details_char[5][0] == '?' || sids.details_char[5][1] == '?') {
 			sprintf(sids.details_char[5], "%s", "?\0");
 		}
-		students_id_list = enumerate_elements_from_tree(node, sids);
+		students_id_list = enumerate_student_id_from_tree(node, sids);
 	}
 	else {
 
