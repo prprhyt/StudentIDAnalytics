@@ -12,7 +12,7 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd);
 felicalib_wrapper flib_wrapper;
 student_id_data_node* o_node(nullptr);
 student_id_data_tree sidt;
-donuts_chart d_chart(50, 50, 300);
+donuts_chart dept_chart(50, 50, 300, _T("--??----"),_T("Dept."));
 
 int WINAPI WinMain(
 	HINSTANCE hInstance,
@@ -137,8 +137,8 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd){//マルチスレッドで学生IDの読み取り待機
 			/*for (int i = 0; i < students_id_lists.size(); ++i) {
 				TextOut(hdc, 10, 50+i*20, students_id_lists[i].c_str(), lstrlen(students_id_lists[i].c_str()));
 			}*/
-			d_chart.set_chart_elements(o_node, _T("--??----"));
-			d_chart.draw_donuts_chart(hdc);
+			dept_chart.set_chart_elements(o_node);
+			dept_chart.draw_donuts_chart(hdc);
 		}
 		ReleaseDC(static_cast<HWND>(hwnd), hdc);
 		Sleep(100);

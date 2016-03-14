@@ -10,14 +10,15 @@
 
 class donuts_chart {
 private:
-	int x_, y_, width_, height_, radius_, center_x_,center_y_;
-	int sum_;
+	int x_, y_, width_, height_, radius_,sum_;
+	WCHAR target_word_[16];
+	WCHAR message_[256];
 	std::vector<std::wstring> elements_name_list_;
 	std::unordered_map<std::wstring, int> chart_elements_;
 	std::vector<COLORREF> colors;
 public:
-	donuts_chart(int x, int y, int len);
-	void set_chart_elements(student_id_data_node*,WCHAR[]);
+	donuts_chart(int x, int y, int len,WCHAR[],WCHAR[]);
+	void set_chart_elements(student_id_data_node*);
 	HDC draw_donuts_chart(HDC hdc);
 
 };

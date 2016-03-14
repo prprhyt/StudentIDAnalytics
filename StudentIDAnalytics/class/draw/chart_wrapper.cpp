@@ -2,12 +2,14 @@
 
 using namespace std;
 
-donuts_chart::donuts_chart(int x, int y, int len) {
+donuts_chart::donuts_chart(int x, int y, int len,WCHAR rcvdata[],WCHAR msgdata[]) {
 	x_ = x;
 	y_ = y;
 	width_ = len;
 	height_ = len;
 	radius_ = len / 2;
+	wsprintf(target_word_, _T("%s\0"), rcvdata);
+	wsprintf(message_, _T("%s\0"), msgdata);
 	colors.push_back(RGB(73, 115, 201));
 	colors.push_back(RGB(64,197,242));
 	colors.push_back(RGB(247, 187, 1));
@@ -15,11 +17,11 @@ donuts_chart::donuts_chart(int x, int y, int len) {
 	colors.push_back(RGB(73, 215, 201));
 }
 
-void donuts_chart::set_chart_elements(student_id_data_node *node,WCHAR rcvdata[]) {
+void donuts_chart::set_chart_elements(student_id_data_node *node) {
 	student_id_data_tree studnet_id_data_tree_cls;
-	wstring temp_wstring = rcvdata;
-	elements_name_list_ = studnet_id_data_tree_cls.get_list_of_elements_name_by_word(node,rcvdata);
-	sum_ = studnet_id_data_tree_cls.get_number_of_student_id_by_word(node, rcvdata);
+	wstring temp_wstring = target_word_;
+	elements_name_list_ = studnet_id_data_tree_cls.get_list_of_elements_name_by_word(node, target_word_);
+	sum_ = studnet_id_data_tree_cls.get_number_of_student_id_by_word(node, target_word_);
 	int index_num = 0;
 	index_num = temp_wstring.find(_T("?"), index_num);
 	for (int i = 0; i < elements_name_list_.size(); ++i) {
@@ -42,6 +44,9 @@ void donuts_chart::set_chart_elements(student_id_data_node *node,WCHAR rcvdata[]
 
 HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚ÅƒAƒ“ƒ`ƒGƒCƒŠƒAƒX‚ğ‚©‚¯‚é
 	double pie_rad=0;
+	WCHAR temp_wchar[256];
+	RECT rt;
+	int txt_height;
 
 	HPEN hWhitePen = static_cast<HPEN>(GetStockObject(WHITE_PEN));
 	HPEN oldpen = static_cast<HPEN>(SelectObject(hdc, hWhitePen));
@@ -66,6 +71,15 @@ HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚Åƒ
 	HBRUSH hWhiteBrush = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
 	HBRUSH hOldBrush = static_cast<HBRUSH>(SelectObject(hdc, hWhiteBrush));
 	Pie(hdc, x_ + width_*0.2, y_ + height_*0.2, x_ + width_*0.8, y_ + height_*0.8, x_ + width_ / 2, y_ + height_*0.2, x_ + width_ / 2, y_ + height_*0.2);
+	
+	wsprintf(temp_wchar, _T("%s\nTotal:%d\0"), message_, sum_);
+	DrawText(hdc, temp_wchar, -1, &rt, DT_CALCRECT);//•¶š‚Ì•`‰æ—Ìˆæ‚Ì‹éŒ`‚ğæ“¾
+	txt_height = rt.bottom - rt.top;
+	rt.left = x_;//width_ / 2 - 0.8*radius_*cos(M_PI/4 - M_PI / 2) + x_;
+	rt.right = x_ + width_;//width_ / 2 - 0.8*radius_*cos(7*M_PI / 4 - M_PI / 2) + x_;
+	rt.top = (height_ - txt_height) / 2 + y_;//0.8*radius_*sin(M_PI / 4 - M_PI / 2) + y_ + height_ / 2;
+	rt.bottom = (height_ + txt_height) / 2 + y_;//0.8*radius_*sin(3*M_PI / 4 - M_PI / 2) + y_ + height_ / 2;
+	DrawText(hdc, temp_wchar, -1, &rt, DT_CENTER);
 
 	SelectObject(hdc, oldpen);
 	SelectObject(hdc, hOldBrush);

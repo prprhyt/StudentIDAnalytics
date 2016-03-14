@@ -286,7 +286,7 @@ vector<wstring> student_id_data_tree::enumerate_student_id_from_tree(student_id_
 		else {
 			if (binary_search(node->personal_id.begin(), node->personal_id.end(), atoi(sids.details_char[sids.count]))) {
 				WCHAR temp_wchar[16];
-				wsprintf(temp_wchar, _T("%s\0"),sids.details_char[sids.count]);
+				mbstowcs(temp_wchar, sids.details_char[sids.count], sizeof(sids.details_char[sids.count]));
 				students_id_list.push_back(temp_wchar);
 			}
 		}
@@ -354,13 +354,6 @@ vector<wstring> student_id_data_tree::enumerate_elements_from_tree(student_id_da
 				for (int i = 0; i < node->personal_id.size(); ++i) {
 					WCHAR temp_wchar[16];
 					wsprintf(temp_wchar, _T("%d\0"), node->personal_id[i]);
-					students_id_list.push_back(temp_wchar);
-				}
-			}
-			else {
-				if (binary_search(node->personal_id.begin(), node->personal_id.end(), atoi(sids.details_char[sids.count]))) {
-					WCHAR temp_wchar[16];
-					wsprintf(temp_wchar, _T("%s\0"), sids.details_char[sids.count]);
 					students_id_list.push_back(temp_wchar);
 				}
 			}
