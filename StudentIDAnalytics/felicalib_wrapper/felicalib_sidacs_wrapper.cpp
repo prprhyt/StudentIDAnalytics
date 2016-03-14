@@ -166,6 +166,9 @@ student_id_data_node* student_id_data_tree::delete_node(student_id_data_node *no
 }
 
 void student_id_data_tree::add_tree_student_id(student_id_data_node *node,WCHAR rcvdata[]) {
+	if (lstrlen(rcvdata) != 8) {
+		return;
+	}
 	student_id_details sids;
 	sids.get_student_id_details(rcvdata);
 	sids.count = 0;
@@ -222,7 +225,7 @@ int student_id_data_tree::get_number_of_student_id_by_word(student_id_data_node 
 			sprintf(sids.details_char[5], "%s", "?\0");
 		}
 		if (sids.details_char[2][0] == '-' || sids.details_char[2][1] == '-') {
-			sprintf(sids.details_char[2], "%s", "?\0");
+			sprintf(sids.details_char[2], "%s", "-\0");
 		}
 		if (sids.details_char[5][0] == '-' || sids.details_char[5][1] == '-') {
 			sprintf(sids.details_char[5], "%s", "-\0");
@@ -248,12 +251,10 @@ vector<wstring> student_id_data_tree::enumerate_student_id_from_tree(student_id_
 		if (!strcmp("?", sids.details_char[sids.count])) {
 			++(sids.count);
 			temp_studnets_id = enumerate_student_id_from_tree(node->nodes[i], sids);
-			if (temp_sids_count > 0) {
-				for (int j = 0; j < temp_studnets_id.size(); ++j) {
+			for (int j = 0; j < temp_studnets_id.size(); ++j) {
 					WCHAR temp_wchar[16];
-					mbstowcs(temp_wchar, node->label, sizeof(node->label));
+					mbstowcs(temp_wchar, node->nodes[i]->label, sizeof(node->nodes[i]->label));
 					temp_studnets_id[j].insert(0, temp_wchar);
-				}
 			}
 			copy(temp_studnets_id.begin(), temp_studnets_id.end(), back_inserter(students_id_list));
 			sids.count = temp_sids_count;
@@ -261,12 +262,10 @@ vector<wstring> student_id_data_tree::enumerate_student_id_from_tree(student_id_
 		else if (!strcmp(node->nodes[i]->label, sids.details_char[sids.count])) {
 			if ((sids.count)++ <= 4) {
 				temp_studnets_id = enumerate_student_id_from_tree(node->nodes[i], sids);
-				if (temp_sids_count > 0) {
-					for (int j = 0; j < temp_studnets_id.size(); ++j) {
-						WCHAR temp_wchar[16];
-						mbstowcs(temp_wchar, node->label, sizeof(node->label));
-						temp_studnets_id[j].insert(0, temp_wchar);
-					}
+				for (int j = 0; j < temp_studnets_id.size(); ++j) {
+					WCHAR temp_wchar[16];
+					mbstowcs(temp_wchar, node->nodes[i]->label, sizeof(node->nodes[i]->label));
+					temp_studnets_id[j].insert(0, temp_wchar);
 				}
 				copy(temp_studnets_id.begin(), temp_studnets_id.end(), back_inserter(students_id_list));
 			}
@@ -280,17 +279,14 @@ vector<wstring> student_id_data_tree::enumerate_student_id_from_tree(student_id_
 		if (!strcmp("?", sids.details_char[sids.count])) {
 			for (int i = 0; i < node->personal_id.size(); ++i) {
 				WCHAR temp_wchar[16];
-				mbstowcs(temp_wchar, node->label, sizeof(node->label));
-				wsprintf(temp_wchar, _T("%s%d\0"), temp_wchar,node->personal_id[i]);
+				wsprintf(temp_wchar, _T("%d\0"),node->personal_id[i]);
 				students_id_list.push_back(temp_wchar);
 			}
 		}
 		else {
 			if (binary_search(node->personal_id.begin(), node->personal_id.end(), atoi(sids.details_char[sids.count]))) {
-				char temp_char[16];
 				WCHAR temp_wchar[16];
-				sprintf(temp_char, "%s%s\0", node->label, sids.details_char[sids.count]);
-				mbstowcs(temp_wchar, temp_char, sizeof(temp_char));
+				wsprintf(temp_wchar, _T("%s\0"),sids.details_char[sids.count]);
 				students_id_list.push_back(temp_wchar);
 			}
 		}
@@ -357,17 +353,14 @@ vector<wstring> student_id_data_tree::enumerate_elements_from_tree(student_id_da
 			if (!strcmp("?", sids.details_char[sids.count])) {
 				for (int i = 0; i < node->personal_id.size(); ++i) {
 					WCHAR temp_wchar[16];
-					mbstowcs(temp_wchar, node->label, sizeof(node->label));
-					wsprintf(temp_wchar, _T("%s%d\0"), temp_wchar, node->personal_id[i]);
+					wsprintf(temp_wchar, _T("%d\0"), node->personal_id[i]);
 					students_id_list.push_back(temp_wchar);
 				}
 			}
 			else {
 				if (binary_search(node->personal_id.begin(), node->personal_id.end(), atoi(sids.details_char[sids.count]))) {
-					char temp_char[16];
 					WCHAR temp_wchar[16];
-					sprintf(temp_char, "%s%s\0", node->label, sids.details_char[sids.count]);
-					mbstowcs(temp_wchar, temp_char, sizeof(temp_char));
+					wsprintf(temp_wchar, _T("%s\0"), sids.details_char[sids.count]);
 					students_id_list.push_back(temp_wchar);
 				}
 			}
@@ -440,6 +433,10 @@ int student_id_data_tree::restore_student_id_data(student_id_data_node *node) {
 	}
 
 	while(NULL != fgetws(read_line, MAX_PATH, fp)) {
+		wstring temp_wstring = read_line;
+		int index_n = temp_wstring.find(_T("\n"));
+		temp_wstring.replace(index_n, 1, _T("\0"));
+		wsprintf(read_line, _T("%s\0"), temp_wstring.c_str());
 		add_tree_student_id(node, read_line);
 	}
 	fclose(fp);

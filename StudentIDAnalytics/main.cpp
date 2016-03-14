@@ -97,7 +97,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	case WM_DESTROY:
 		CloseHandle(mThread);
 		flib_wrapper.destroy_felica();
-		//sidt.store_student_id_data(o_node);
+		sidt.store_student_id_data(o_node);
 		o_node = sidt.delete_node(o_node);
 		PostQuitMessage(0);
 		break;
@@ -130,8 +130,8 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd){//マルチスレッドで学生IDの読み取り待機
 			sidt.add_tree_student_id(o_node, _T("3bjt2194"));
 			sidt.add_tree_student_id(o_node, _T("5ajt2296"));
 			sidt.add_tree_student_id(o_node, _T("2bji1199"));
-			id_sum_num = sidt.get_number_of_student_id_by_word(o_node, _T("5?jt????"));
-			students_id_lists = sidt.get_list_of_student_id_by_word(o_node, _T("5?jt????"));
+			id_sum_num = sidt.get_number_of_student_id_by_word(o_node, _T("????????"));
+			students_id_lists = sidt.get_list_of_student_id_by_word(o_node, _T("????????"));
 			wsprintf(ID_sum_wchar, _T("%d"), id_sum_num);
 			//TextOut(hdc, 10, 30, ID_sum_wchar, lstrlen(ID_sum_wchar));
 			/*for (int i = 0; i < students_id_lists.size(); ++i) {

@@ -5,6 +5,7 @@
 #include<math.h>
 #include<unordered_map>
 #include<vector>
+#include<windows.h>
 #include"../../felicalib_wrapper/felicalib_sidacs_wrapper.hpp"
 
 class donuts_chart {
