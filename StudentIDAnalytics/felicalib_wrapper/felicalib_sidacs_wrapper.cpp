@@ -279,7 +279,7 @@ vector<wstring> student_id_data_tree::enumerate_student_id_from_tree(student_id_
 		if (!strcmp("?", sids.details_char[sids.count])) {
 			for (int i = 0; i < node->personal_id.size(); ++i) {
 				WCHAR temp_wchar[16];
-				wsprintf(temp_wchar, _T("%d\0"),node->personal_id[i]);
+				wsprintf(temp_wchar, _T("%02d\0"),node->personal_id[i]);
 				students_id_list.push_back(temp_wchar);
 			}
 		}
@@ -353,12 +353,13 @@ vector<wstring> student_id_data_tree::enumerate_elements_from_tree(student_id_da
 			if (!strcmp("?", sids.details_char[sids.count])) {
 				for (int i = 0; i < node->personal_id.size(); ++i) {
 					WCHAR temp_wchar[16];
-					wsprintf(temp_wchar, _T("%d\0"), node->personal_id[i]);
+					wsprintf(temp_wchar, _T("%02d\0"), node->personal_id[i]);
 					students_id_list.push_back(temp_wchar);
 				}
 			}
 		}
 	}
+	std::sort(students_id_list.begin(), students_id_list.end());
 	students_id_list.erase(unique(students_id_list.begin(), students_id_list.end()), students_id_list.end());
 	return students_id_list;
 }

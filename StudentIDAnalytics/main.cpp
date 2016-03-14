@@ -83,8 +83,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	//mthread
 	static HANDLE	mThread;
 	static DWORD TId;
-	static std::vector<std::wstring> students_id_lists;
-
 
 	switch (msg) {
 	case WM_CREATE:
@@ -96,9 +94,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		break;
 	case WM_DESTROY:
 		CloseHandle(mThread);
-		flib_wrapper.destroy_felica();
 		sidt.store_student_id_data(o_node);
 		o_node = sidt.delete_node(o_node);
+		flib_wrapper.destroy_felica();
 		PostQuitMessage(0);
 		break;
 	case WM_LBUTTONDOWN:
