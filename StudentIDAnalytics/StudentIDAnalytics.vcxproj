@@ -152,6 +152,10 @@
     <ClInclude Include="felicalib\felicaint.h" />
     <ClInclude Include="felicalib\felicalib.h" />
     <ClInclude Include="felicalib_wrapper\felicalib_sidacs_wrapper.hpp" />
+    <ClInclude Include="resources\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\menu_bar.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

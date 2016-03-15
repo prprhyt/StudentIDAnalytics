@@ -1,6 +1,7 @@
 #include<Windows.h>
 #include"felicalib_wrapper\felicalib_sidacs_wrapper.hpp"
 #include"class\draw\chart_wrapper.hpp"
+#include"resources\resource.h"
 
 
 ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass);
@@ -53,7 +54,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
 	wcs.hIcon = NULL;
 	wcs.hCursor = 0;
 	wcs.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-	wcs.lpszMenuName = 0;
+	wcs.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
 	wcs.lpszClassName = szWindowClass;
 	return RegisterClass(&wcs);
 }
@@ -110,6 +111,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		enter_ad_chart.draw_donuts_chart(hdc);
 		six_ad_dept_chart.draw_donuts_chart(hdc);
 		ReleaseDC(hwnd, hdc);
+		break;
+	case WM_COMMAND:
+		switch (LOWORD(wp)) {
+		case ID_FILE_SAVE:
+			sidt.store_student_id_data(o_node);
+			break;
+		case ID_FILE_QUIT:
+			DestroyWindow(hwnd);
+			break;
+		}
 		break;
 	}
 	return DefWindowProc(hwnd, msg, wp, lp);

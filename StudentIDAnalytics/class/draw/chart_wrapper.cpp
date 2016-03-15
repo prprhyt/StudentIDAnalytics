@@ -23,13 +23,17 @@ void donuts_chart::set_chart_elements(student_id_data_node *node) {
 	int index_num = 0;
 	map<long, wstring> temp_maps;
 	int temp_count = 0;
+	int index_multiply = 1;
 	elements_name_list_ = studnet_id_data_tree_cls.get_list_of_elements_name_by_word(node, target_word_);
 	sum_ = studnet_id_data_tree_cls.get_number_of_student_id_by_word(node, target_word_);
 
 	index_num = temp_wstring.find(_T("?"), index_num);
+	for (int i = 0; i < static_cast<int>(log10(static_cast<double>(elements_name_list_.size() - 1)) + 1); ++i) {
+		index_multiply *= 10;
+	}
 	for (int i = 0; i < elements_name_list_.size(); ++i) {
 		WCHAR temp_wchar[16];
-		if (index_num ==2 || index_num >= 6) {
+		if (index_num ==2 || index_num == 6) {
 			temp_wstring.replace(index_num, 2, elements_name_list_[i]);
 		}
 		else {
@@ -38,7 +42,7 @@ void donuts_chart::set_chart_elements(student_id_data_node *node) {
 		wsprintf(temp_wchar, _T("%s"), temp_wstring.c_str());
 
 		chart_elements_[elements_name_list_[i]] = studnet_id_data_tree_cls.get_number_of_student_id_by_word(node, temp_wchar);
-		temp_maps[chart_elements_[elements_name_list_[i]]*10+ i] = elements_name_list_[i];//昇順ソート用
+		temp_maps[chart_elements_[elements_name_list_[i]]*index_multiply + i] = elements_name_list_[i];//昇順ソート用
 	}
 
 	for (map<long, wstring>::iterator it = temp_maps.begin(); it != temp_maps.end(); ++it) {

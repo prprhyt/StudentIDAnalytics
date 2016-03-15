@@ -65,5 +65,13 @@
     <ClInclude Include="class\draw\chart_wrapper.hpp">
       <Filter>ヘッダー ファイル\class\draw</Filter>
     </ClInclude>
+    <ClInclude Include="resources\resource.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\menu_bar.rc">
+      <Filter>リソース ファイル</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
