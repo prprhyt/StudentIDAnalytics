@@ -13,6 +13,8 @@ felicalib_wrapper flib_wrapper;
 student_id_data_node* o_node(nullptr);
 student_id_data_tree sidt;
 donuts_chart dept_chart(50, 50, 300, _T("--??----"),_T("Dept."));
+donuts_chart enter_ad_chart(400, 50, 300,_T("?-------"), _T("Admission year."));
+donuts_chart six_ad_dept_chart(50, 400, 300, _T("6-??----"), _T("2016 students Dept."));
 
 int WINAPI WinMain(
 	HINSTANCE hInstance,
@@ -104,7 +106,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		break;
 	case WM_PAINT:
 		hdc = GetDC(hwnd);
-
+		dept_chart.draw_donuts_chart(hdc);
+		enter_ad_chart.draw_donuts_chart(hdc);
+		six_ad_dept_chart.draw_donuts_chart(hdc);
 		ReleaseDC(hwnd, hdc);
 		break;
 	}
@@ -115,28 +119,24 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd){//マルチスレッドで学生IDの読み取り待機
 	int zero_is_continue = 0;
 	HDC hdc;
 	WCHAR StudentID[32];
-	WCHAR ID_sum_wchar[32];
-	int id_sum_num = 0;
-	std::vector<std::wstring> students_id_lists;
+
 	while (!zero_is_continue) {
 		//InvalidateRect(static_cast<HWND>(hwnd), NULL, FALSE);
 		hdc = GetDC(static_cast<HWND>(hwnd));
 		if (!flib_wrapper.read_data(StudentID)) {
-			//TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
 			sidt.add_tree_student_id(o_node, StudentID);
 			sidt.add_tree_student_id(o_node, _T("4bjt1289"));
 			sidt.add_tree_student_id(o_node, _T("3bjt2194"));
 			sidt.add_tree_student_id(o_node, _T("5ajt2296"));
 			sidt.add_tree_student_id(o_node, _T("2bji1199"));
-			id_sum_num = sidt.get_number_of_student_id_by_word(o_node, _T("????????"));
-			students_id_lists = sidt.get_list_of_student_id_by_word(o_node, _T("????????"));
-			wsprintf(ID_sum_wchar, _T("%d"), id_sum_num);
-			//TextOut(hdc, 10, 30, ID_sum_wchar, lstrlen(ID_sum_wchar));
-			/*for (int i = 0; i < students_id_lists.size(); ++i) {
-				TextOut(hdc, 10, 50+i*20, students_id_lists[i].c_str(), lstrlen(students_id_lists[i].c_str()));
-			}*/
+			TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
+
 			dept_chart.set_chart_elements(o_node);
 			dept_chart.draw_donuts_chart(hdc);
+			enter_ad_chart.set_chart_elements(o_node);
+			enter_ad_chart.draw_donuts_chart(hdc);
+			six_ad_dept_chart.set_chart_elements(o_node);
+			six_ad_dept_chart.draw_donuts_chart(hdc);
 		}
 		ReleaseDC(static_cast<HWND>(hwnd), hdc);
 		Sleep(100);

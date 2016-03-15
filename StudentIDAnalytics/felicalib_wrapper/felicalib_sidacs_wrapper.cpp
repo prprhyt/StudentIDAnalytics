@@ -332,7 +332,6 @@ vector<wstring> student_id_data_tree::enumerate_elements_from_tree(student_id_da
 			sids.count = temp_sids_count;
 		}
 		else if (!strcmp("?", sids.details_char[sids.count])) {
-			node->nodes[i]->label;
 			WCHAR temp_wchar[16];
 			mbstowcs(temp_wchar, node->nodes[i]->label, sizeof(node->nodes[i]->label));
 			students_id_list.push_back(temp_wchar);

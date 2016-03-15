@@ -4,7 +4,9 @@
 #define _USE_MATH_DEFINES
 #include<math.h>
 #include<unordered_map>
+#include<map>
 #include<vector>
+#include<string>
 #include<windows.h>
 #include"../../felicalib_wrapper/felicalib_sidacs_wrapper.hpp"
 

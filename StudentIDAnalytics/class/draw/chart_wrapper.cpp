@@ -19,10 +19,13 @@ donuts_chart::donuts_chart(int x, int y, int len,WCHAR rcvdata[],WCHAR msgdata[]
 
 void donuts_chart::set_chart_elements(student_id_data_node *node) {
 	student_id_data_tree studnet_id_data_tree_cls;
-	wstring temp_wstring = target_word_;
+	wstring temp_wstring = target_word_,temp_wstring_s;
+	int index_num = 0;
+	map<long, wstring> temp_maps;
+	int temp_count = 0;
 	elements_name_list_ = studnet_id_data_tree_cls.get_list_of_elements_name_by_word(node, target_word_);
 	sum_ = studnet_id_data_tree_cls.get_number_of_student_id_by_word(node, target_word_);
-	int index_num = 0;
+
 	index_num = temp_wstring.find(_T("?"), index_num);
 	for (int i = 0; i < elements_name_list_.size(); ++i) {
 		WCHAR temp_wchar[16];
@@ -35,6 +38,14 @@ void donuts_chart::set_chart_elements(student_id_data_node *node) {
 		wsprintf(temp_wchar, _T("%s"), temp_wstring.c_str());
 
 		chart_elements_[elements_name_list_[i]] = studnet_id_data_tree_cls.get_number_of_student_id_by_word(node, temp_wchar);
+		temp_maps[chart_elements_[elements_name_list_[i]]*10+ i] = elements_name_list_[i];//¸‡ƒ\[ƒg—p
+	}
+
+	for (map<long, wstring>::iterator it = temp_maps.begin(); it != temp_maps.end(); ++it) {
+		long key = it->first;
+		wstring val = it->second;
+		elements_name_list_[temp_count] = val;//ƒ\[ƒg‚µ‚½‚à‚Ì‚ğ‡‚É‘ã“ü
+		++temp_count;
 	}
 	if (index_num==2|| index_num==6) {
 		++index_num;
@@ -75,10 +86,10 @@ HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚Åƒ
 	wsprintf(temp_wchar, _T("%s\nTotal:%d\0"), message_, sum_);
 	DrawText(hdc, temp_wchar, -1, &rt, DT_CALCRECT);//•¶š‚Ì•`‰æ—Ìˆæ‚Ì‹éŒ`‚ğæ“¾
 	txt_height = rt.bottom - rt.top;
-	rt.left = x_;//width_ / 2 - 0.8*radius_*cos(M_PI/4 - M_PI / 2) + x_;
-	rt.right = x_ + width_;//width_ / 2 - 0.8*radius_*cos(7*M_PI / 4 - M_PI / 2) + x_;
-	rt.top = (height_ - txt_height) / 2 + y_;//0.8*radius_*sin(M_PI / 4 - M_PI / 2) + y_ + height_ / 2;
-	rt.bottom = (height_ + txt_height) / 2 + y_;//0.8*radius_*sin(3*M_PI / 4 - M_PI / 2) + y_ + height_ / 2;
+	rt.left = x_;
+	rt.right = x_ + width_;
+	rt.top = (height_ - txt_height) / 2 + y_;
+	rt.bottom = (height_ + txt_height) / 2 + y_;
 	DrawText(hdc, temp_wchar, -1, &rt, DT_CENTER);
 
 	SelectObject(hdc, oldpen);
