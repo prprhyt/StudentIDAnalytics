@@ -62,6 +62,9 @@ HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚Åƒ
 	WCHAR temp_wchar[256];
 	RECT rt;
 	int txt_height;
+	int column_num = 0;
+	RECT rt_s;
+	const int row_margin = 5;//‡Œv”‚Ì•\¦‚Æ—v‘f‚Ì•\¦‚ÌŠÔŠu
 
 	HPEN hWhitePen = static_cast<HPEN>(GetStockObject(WHITE_PEN));
 	HPEN oldpen = static_cast<HPEN>(SelectObject(hdc, hWhitePen));
@@ -87,14 +90,94 @@ HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚Åƒ
 	HBRUSH hOldBrush = static_cast<HBRUSH>(SelectObject(hdc, hWhiteBrush));
 	Pie(hdc, x_ + width_*0.2, y_ + height_*0.2, x_ + width_*0.8, y_ + height_*0.8, x_ + width_ / 2, y_ + height_*0.2, x_ + width_ / 2, y_ + height_*0.2);
 	
-	wsprintf(temp_wchar, _T("%s\nTotal:%d\0"), message_, sum_);
-	DrawText(hdc, temp_wchar, -1, &rt, DT_CALCRECT);//•¶š‚Ì•`‰æ—Ìˆæ‚Ì‹éŒ`‚ğæ“¾
-	txt_height = rt.bottom - rt.top;
-	rt.left = x_;
-	rt.right = x_ + width_;
-	rt.top = (height_ - txt_height) / 2 + y_;
-	rt.bottom = (height_ + txt_height) / 2 + y_;
-	DrawText(hdc, temp_wchar, -1, &rt, DT_CENTER);
+	for (int i = 1; i < elements_name_list_.size()+1; ++i) {
+		wstring temp_inline_chart_wstring=_T("");
+		wstring temp_wstring = _T("");
+		for (int j = 0; j < elements_name_list_.size(); j+=i) {
+			for (int k = 0; k < i; ++k) {
+				if (j + k < elements_name_list_.size()) {
+					temp_wstring += _T(" ") + elements_name_list_[j + k];
+				}
+				else {
+					break;
+				}
+			}
+			temp_wstring += _T("\n");
+		}
+		temp_inline_chart_wstring = message_;
+		temp_inline_chart_wstring += _T("\n")+to_wstring(sum_)+_T("\n")+ temp_wstring;
+		DrawText(hdc, temp_wstring.c_str(), -1, &rt, DT_CALCRECT);//•¶š‚Ì•`‰æ—Ìˆæ‚Ì‹éŒ`‚ğæ“¾
+		int temp_txt_height = rt.bottom - rt.top;
+		if (radius_ < (temp_txt_height+ row_margin)/2) {
+			break;
+		}
+		int temp_half_max_width = static_cast<int>(sqrt(radius_*radius_ - (temp_txt_height / 2)*(temp_txt_height / 2))+0.5);
+		if (temp_half_max_width < (rt.right - rt.left) / 2) {
+			break;
+		}
+		column_num = i;
+		rt_s = rt;
+	}
+
+	if(column_num>0){
+		wsprintf(temp_wchar, _T("%s\nTotal:%d\0"), message_, sum_);
+		DrawText(hdc, temp_wchar, -1, &rt, DT_CALCRECT);//•¶š‚Ì•`‰æ—Ìˆæ‚Ì‹éŒ`‚ğæ“¾
+		txt_height = rt.bottom - rt.top;
+		rt.left = x_;
+		rt.right = x_ + width_;
+		rt.top = (height_ - (rt_s.bottom- rt_s.top)) / 2 + y_;
+		rt.bottom = txt_height + rt.top;
+		DrawText(hdc, temp_wchar, -1, &rt, DT_CENTER);
+		wstring temp_inline_chart_wstring;
+		wstring temp_wstring = _T("");
+		RECT temp_rt = {0,0,0,0};
+		int text_width = 0;
+		int space_width = 0;
+		for (int i = 0; i < column_num; ++i) {
+			temp_wstring += _T(" ") + elements_name_list_[0 + i];
+		}
+		DrawText(hdc, temp_wstring.c_str(), -1, &temp_rt, DT_CALCRECT);//•¶š‚Ì•`‰æ—Ìˆæ‚Ì‹éŒ`‚ğæ“¾
+		text_width = temp_rt.right - temp_rt.left;
+		DrawText(hdc, _T(" "), -1, &temp_rt, DT_CALCRECT);
+		space_width = temp_rt.right - temp_rt.left;
+		temp_rt = { 0,0,0,0 };
+		temp_rt.top = rt.bottom+ row_margin;
+		COLORREF old_text_color = SetTextColor(hdc, RGB(255, 255, 255));
+		COLORREF old_back_color = SetBkColor(hdc, RGB(0, 0, 0));
+
+		for (int j = 0; j < elements_name_list_.size(); j += column_num) {
+			temp_rt.left = (width_ - text_width) / 2 + x_;
+			rt = { 0,0,0,0 };
+			for (int k = 0; k < column_num; ++k) {
+				if (j + k < elements_name_list_.size()) {
+					SetBkColor(hdc, colors[j + k]);
+					temp_wstring = elements_name_list_[j + k];
+					temp_rt.left += rt.right - rt.left + space_width;
+					DrawText(hdc, temp_wstring.c_str(), -1, &rt, DT_CALCRECT);
+					temp_rt.right= temp_rt.left+rt.right-rt.left;
+					temp_rt.bottom = rt.bottom - rt.top + temp_rt.top;
+					temp_wstring = elements_name_list_[j + k];
+					DrawText(hdc, temp_wstring.c_str(), -1, &temp_rt, DT_CENTER);
+				}
+				else {
+					break;
+				}
+			}
+			temp_rt.top += rt.bottom-rt.top;
+		}
+		SetTextColor(hdc, old_text_color);
+		SetBkColor(hdc, old_back_color);
+	}
+	else {
+		wsprintf(temp_wchar, _T("%s\nTotal:%d\0"), message_, sum_);
+		DrawText(hdc, temp_wchar, -1, &rt, DT_CALCRECT);//•¶š‚Ì•`‰æ—Ìˆæ‚Ì‹éŒ`‚ğæ“¾
+		txt_height = rt.bottom - rt.top;
+		rt.left = x_;
+		rt.right = x_ + width_;
+		rt.top = (height_ - txt_height) / 2 + y_;
+		rt.bottom = (height_ + txt_height) / 2 + y_;
+		DrawText(hdc, temp_wchar, -1, &rt, DT_CENTER);
+	}
 
 	SelectObject(hdc, oldpen);
 	SelectObject(hdc, hOldBrush);
@@ -103,3 +186,4 @@ HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚Åƒ
 
 	return hdc;
 }
+
