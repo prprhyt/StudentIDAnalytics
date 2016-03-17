@@ -58,7 +58,7 @@ void donuts_chart::set_chart_elements(student_id_data_node *node) {
 }
 
 HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚ÅƒAƒ“ƒ`ƒGƒCƒŠƒAƒX‚ğ‚©‚¯‚é
-	double pie_rad=0;
+	double pie_rad=0;                         //TODO:—v‘fƒeƒLƒXƒg‚Ì”wŒi‚ğŠpŠÛ‚É‚·‚é
 	WCHAR temp_wchar[256];
 	RECT rt;
 	int txt_height;
@@ -187,3 +187,36 @@ HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚Åƒ
 	return hdc;
 }
 
+HDC donuts_chart::draw_elements_details(HDC hdc,HWND hwnd) {
+	POINT pos;
+	if (!GetCursorPos(&pos)) {
+		return hdc;
+	}
+	if (!ScreenToClient(hwnd, &pos)) {
+		return hdc;
+	}
+	if (x_ <= pos.x && pos.x <= x_ + width_ && y_ <= pos.y && pos.y <= y_ + height_) {
+		COLORREF color_comp = GetPixel(hdc, pos.x, pos.y);
+		for (int i = 0; i < elements_name_list_.size(); ++i) {
+			if (color_comp == colors[i]) {
+				COLORREF old_text_color = SetTextColor(hdc, RGB(255, 255, 255));
+				COLORREF old_back_color = SetBkColor(hdc, color_comp);
+				RECT rt;
+				int text_width, text_height;
+				const int cursor_text_margin = 5;
+				wstring details_wstring = elements_name_list_[i] + to_wstring(chart_elements_[elements_name_list_[i]]);
+				DrawText(hdc, details_wstring.c_str(), -1, &rt, DT_CALCRECT);
+				text_width = rt.right - rt.left;
+				text_height = rt.bottom - rt.top;
+				rt.left = pos.x + cursor_text_margin;
+				rt.bottom = pos.y + cursor_text_margin;
+				rt.right = rt.left + text_width;
+				rt.top = rt.bottom - text_height;
+				DrawText(hdc, details_wstring.c_str(), -1, &rt, DT_CENTER);
+				SetTextColor(hdc,old_text_color);
+				SetBkColor(hdc, old_back_color);
+			}
+		}
+	}
+	return hdc;
+}

@@ -22,6 +22,7 @@ public:
 	donuts_chart(int x, int y, int len,WCHAR[],WCHAR[]);
 	void set_chart_elements(student_id_data_node*);
 	HDC draw_donuts_chart(HDC hdc);
+	HDC draw_elements_details(HDC,HWND);
 
 };
 

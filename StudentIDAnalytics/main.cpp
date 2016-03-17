@@ -16,6 +16,7 @@ student_id_data_tree sidt;
 donuts_chart dept_chart(50, 50, 300, _T("--??----"),_T("Dept."));
 donuts_chart enter_ad_chart(400, 50, 300,_T("?-------"), _T("Admission year."));
 donuts_chart six_ad_dept_chart(50, 400, 300, _T("6-??----"), _T("2016 students Dept."));
+donuts_chart class_chart(400, 400, 300, _T("----?---"), _T("students class."));
 
 int WINAPI WinMain(
 	HINSTANCE hInstance,
@@ -83,6 +84,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	HDC hdc;
 	WCHAR StudentID[32];
 
+	static HDC h_comp_dc;
+	static HBITMAP h_comp_bmp;
+	static RECT client_rc;
+
 	//mthread
 	static HANDLE	mThread;
 	static DWORD TId;
@@ -92,6 +97,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		flib_wrapper.init_felica();
 		o_node = sidt.create_node("origin");
 		sidt.restore_student_id_data(o_node);
+
+		GetClientRect(hwnd, &client_rc);
+		hdc = GetDC(hwnd);
+		h_comp_dc = CreateCompatibleDC(hdc);
+		h_comp_bmp = CreateCompatibleBitmap(hdc, client_rc.right,client_rc.bottom);
+		SelectObject(h_comp_dc, h_comp_bmp);
+		ReleaseDC(hwnd, hdc);
+
 		//マルチスレッド
 		mThread = CreateThread(NULL, 0, pasori_thread_, hwnd, 0, &TId);
 		break;
@@ -100,16 +113,39 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		sidt.store_student_id_data(o_node);
 		o_node = sidt.delete_node(o_node);
 		flib_wrapper.destroy_felica();
+		DeleteDC(h_comp_dc);
+		DeleteObject(h_comp_bmp);
 		PostQuitMessage(0);
+		break;
+	case WM_SIZE:
+		DeleteDC(h_comp_dc);
+		DeleteObject(h_comp_bmp);
+		GetClientRect(hwnd, &client_rc);
+		hdc = GetDC(hwnd);
+		h_comp_dc = CreateCompatibleDC(hdc);
+		h_comp_bmp = CreateCompatibleBitmap(hdc, client_rc.right, client_rc.bottom);
+		SelectObject(h_comp_dc, h_comp_bmp);
+		ReleaseDC(hwnd, hdc);
+		InvalidateRect(hwnd, NULL, FALSE);
+		break;
+	case WM_MOUSEMOVE:
+		InvalidateRect(hwnd, NULL, FALSE);
 		break;
 	case WM_LBUTTONDOWN:
 
 		break;
 	case WM_PAINT:
 		hdc = GetDC(hwnd);
-		dept_chart.draw_donuts_chart(hdc);
-		enter_ad_chart.draw_donuts_chart(hdc);
-		six_ad_dept_chart.draw_donuts_chart(hdc);
+		FillRect(h_comp_dc, &client_rc, static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH)));
+		dept_chart.draw_donuts_chart(h_comp_dc);
+		enter_ad_chart.draw_donuts_chart(h_comp_dc);
+		six_ad_dept_chart.draw_donuts_chart(h_comp_dc);
+		class_chart.draw_donuts_chart(h_comp_dc);
+		dept_chart.draw_elements_details(h_comp_dc, hwnd);
+		enter_ad_chart.draw_elements_details(h_comp_dc, hwnd);
+		six_ad_dept_chart.draw_elements_details(h_comp_dc, hwnd);
+		class_chart.draw_elements_details(h_comp_dc, hwnd);
+		BitBlt(hdc, 0, 0, client_rc.right, client_rc.bottom, h_comp_dc, 0, 0, SRCCOPY);
 		ReleaseDC(hwnd, hdc);
 		break;
 	case WM_COMMAND:
@@ -143,11 +179,13 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd){//マルチスレッドで学生IDの読み取り待機
 			TextOut(hdc, 10, 10, StudentID, lstrlen(StudentID));
 
 			dept_chart.set_chart_elements(o_node);
-			dept_chart.draw_donuts_chart(hdc);
 			enter_ad_chart.set_chart_elements(o_node);
-			enter_ad_chart.draw_donuts_chart(hdc);
 			six_ad_dept_chart.set_chart_elements(o_node);
+			class_chart.set_chart_elements(o_node);
+			/*dept_chart.draw_donuts_chart(hdc);
+			enter_ad_chart.draw_donuts_chart(hdc);
 			six_ad_dept_chart.draw_donuts_chart(hdc);
+			class_chart.draw_donuts_chart(hdc);*/
 		}
 		ReleaseDC(static_cast<HWND>(hwnd), hdc);
 		Sleep(100);
