@@ -204,12 +204,12 @@ HDC donuts_chart::draw_elements_details(HDC hdc,HWND hwnd) {
 				RECT rt;
 				int text_width, text_height;
 				const int cursor_text_margin = 5;
-				wstring details_wstring = elements_name_list_[i] + to_wstring(chart_elements_[elements_name_list_[i]]);
+				wstring details_wstring = elements_name_list_[i] +_T(": ")+ to_wstring(chart_elements_[elements_name_list_[i]]);
 				DrawText(hdc, details_wstring.c_str(), -1, &rt, DT_CALCRECT);
 				text_width = rt.right - rt.left;
 				text_height = rt.bottom - rt.top;
 				rt.left = pos.x + cursor_text_margin;
-				rt.bottom = pos.y + cursor_text_margin;
+				rt.bottom = pos.y - cursor_text_margin;
 				rt.right = rt.left + text_width;
 				rt.top = rt.bottom - text_height;
 				DrawText(hdc, details_wstring.c_str(), -1, &rt, DT_CENTER);

@@ -182,6 +182,8 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd){//マルチスレッドで学生IDの読み取り待機
 			enter_ad_chart.set_chart_elements(o_node);
 			six_ad_dept_chart.set_chart_elements(o_node);
 			class_chart.set_chart_elements(o_node);
+
+			InvalidateRect(static_cast<HWND>(hwnd), NULL, FALSE);
 			/*dept_chart.draw_donuts_chart(hdc);
 			enter_ad_chart.draw_donuts_chart(hdc);
 			six_ad_dept_chart.draw_donuts_chart(hdc);

@@ -26,7 +26,6 @@ int felicalib_wrapper::read_data(WCHAR rcvdata[]) {
 		}
 
 		Sleep(500);
-
 		timeoutcount++;
 
 	}
@@ -42,14 +41,21 @@ int felicalib_wrapper::read_data(WCHAR rcvdata[]) {
 		if (!f)
 		{
 			MessageBox(NULL, _T("Reading system code failed."), _T("Error"), MB_OK);
+			if (f != nullptr) {
+				felica_free(f);
+				f = nullptr;
+			}
 			return -1;
 		}
-
 
 		f2 = felica_enum_service(p, N2HS((f)->system_code[0]));
 		if (!f2)
 		{
 			MessageBox(NULL, _T("Reading system code failed."), _T("Error"), MB_OK);
+			if (f != nullptr) {
+				felica_free(f);
+				f = nullptr;
+			}
 			felica_free(f2);
 			return -1;
 		}
@@ -58,21 +64,40 @@ int felicalib_wrapper::read_data(WCHAR rcvdata[]) {
 		uint8 data[16] = "";
 		if (felica_read_without_encryption02(f2, service, 0, (uint8)0, data)) {
 			MessageBox(NULL, _T("data is not available."), _T("Error"), MB_OK);
+			if (f != nullptr) {
+				felica_free(f);
+				f = nullptr;
+			}
 			felica_free(f2);
 			return -1;
 		}
 		sprintf(temp_data, "%s", data);//unsigned char -> char
 		mbstowcs(rcvdata, temp_data, sizeof(temp_data));//char -> WCHAR
+		if (f != nullptr) {
+			felica_free(f);
+			f = nullptr;
+		}
 		felica_free(f2);
 	}else {
+		if (f != nullptr) {
+			felica_free(f);
+			f = nullptr;
+		}
 		return -1;
 	}
 	return 0;
 }
 
 void felicalib_wrapper::destroy_felica() {
-	felica_free(f);
-	pasori_close(p);
+
+	if (f != nullptr) {
+		felica_free(f);
+		f = nullptr;
+	}
+	if (p != nullptr) {
+		pasori_close(p);
+		p = nullptr;
+	}
 	return;
 }
 
