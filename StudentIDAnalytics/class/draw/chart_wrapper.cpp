@@ -4,6 +4,7 @@ using namespace std;
 
 unordered_map<wstring, COLORREF> donuts_chart:: chart_colors_;
 unordered_map<COLORREF, char> donuts_chart::colors_index_;
+unordered_map<int, int> donuts_chart::hue_range_index_;
 
 donuts_chart::donuts_chart(int x, int y, int len,WCHAR rcvdata[],WCHAR msgdata[]) {
 	x_ = x;
@@ -13,6 +14,7 @@ donuts_chart::donuts_chart(int x, int y, int len,WCHAR rcvdata[],WCHAR msgdata[]
 	radius_ = len / 2;
 	wsprintf(target_word_, _T("%s\0"), rcvdata);
 	wsprintf(message_, _T("%s\0"), msgdata);
+	chart_color_index__wstring = _T("");
 }
 
 void donuts_chart::set_chart_elements(student_id_data_node *node) {
@@ -22,10 +24,31 @@ void donuts_chart::set_chart_elements(student_id_data_node *node) {
 	map<long, wstring> temp_maps;
 	int temp_count = 0;
 	int index_multiply = 1;
+	int temp_hue_index =0;
+	color_convert color_conv;
+	random_device rnd;
+	mt19937 mt(rnd());
+
 	elements_name_list_ = studnet_id_data_tree_cls.get_list_of_elements_name_by_word(node, target_word_);
 	sum_ = studnet_id_data_tree_cls.get_number_of_student_id_by_word(node, target_word_);
 
 	index_num = temp_wstring.find(_T("?"), index_num);
+	if (index_num == 3 || index_num == 7) {
+		--index_num;
+	}
+	if (index_num > 2) {
+		temp_hue_index = index_num - 1;
+	}
+	else {
+		temp_hue_index = index_num;
+	}
+	if (hue_range_index_.find(temp_hue_index) == hue_range_index_.end()) {
+		uniform_int_distribution<int> rand_h_index(1, 5);
+		hue_range_index_[temp_hue_index] = rand_h_index(mt);
+	}
+	
+	chart_color_index__wstring = temp_hue_index + _T("_");
+
 	for (int i = 0; i < static_cast<int>(log10(static_cast<double>(elements_name_list_.size() - 1)) + 1); ++i) {
 		index_multiply *= 10;
 	}
@@ -44,21 +67,19 @@ void donuts_chart::set_chart_elements(student_id_data_node *node) {
 	}
 
 
-	color_convert color_conv;
-	random_device rnd;
-	mt19937 mt(rnd());
-	uniform_int_distribution<> rand_h(0, 359);
-	uniform_int_distribution<> rand_sv(170, 255);
+
+	uniform_int_distribution<int> rand_h(hue_range_index_[temp_hue_index]*60, hue_range_index_[temp_hue_index]*60+59);
+	uniform_int_distribution<int> rand_sv(170, 255);
 	for (map<long, wstring>::iterator it = temp_maps.begin(); it != temp_maps.end(); ++it) {
 		long key = it->first;
 		wstring val = it->second;
 		elements_name_list_[temp_count] = val;//ƒ\[ƒg‚µ‚½‚à‚Ì‚ğ‡‚É‘ã“ü
-		if (chart_colors_.find(val) == chart_colors_.end()) {
+		if (chart_colors_.find(chart_color_index__wstring +val) == chart_colors_.end()) {
 			COLORREF temp_color = color_conv.hsv_to_rgb(rand_h(mt), rand_sv(mt), rand_sv(mt));
 			while (colors_index_.find(temp_color) != colors_index_.end()) {
 				temp_color = color_conv.hsv_to_rgb(rand_h(mt), rand_sv(mt), rand_sv(mt));
 			}
-			chart_colors_[val] = temp_color;
+			chart_colors_[chart_color_index__wstring + val] = temp_color;
 			colors_index_[temp_color] = '\0';
 		}
 		++temp_count;
@@ -86,7 +107,7 @@ HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚Åƒ
 		x_end = width_ / 2-radius_*cos(pie_rad - M_PI / 2)+ x_;
 		y_begin = radius_*sin(temp_rad-M_PI / 2)+y_+height_/2;
 		y_end = radius_*sin(pie_rad - M_PI / 2) + y_+height_/2;
-		HBRUSH hBrush = CreateSolidBrush(chart_colors_[elements_name_list_[i]]);
+		HBRUSH hBrush = CreateSolidBrush(chart_colors_[chart_color_index__wstring+elements_name_list_[i]]);
 		HBRUSH hOldBrush_s= static_cast<HBRUSH>(SelectObject(hdc, hBrush));
 		Pie(hdc, x_, y_, x_+width_, y_+height_, x_begin, y_begin, x_end, y_end);
 		SelectObject(hdc, hBrush);
@@ -158,7 +179,7 @@ HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚Åƒ
 			rt = { 0,0,0,0 };
 			for (int k = 0; k < column_num; ++k) {
 				if (j + k < elements_name_list_.size()) {
-					SetBkColor(hdc, chart_colors_[elements_name_list_[j + k]]);
+					SetBkColor(hdc, chart_colors_[chart_color_index__wstring+elements_name_list_[j + k]]);
 					temp_wstring = elements_name_list_[j + k];
 					temp_rt.left += rt.right - rt.left + space_width;
 					DrawText(hdc, temp_wstring.c_str(), -1, &rt, DT_CALCRECT);
@@ -205,7 +226,7 @@ HDC donuts_chart::draw_elements_details(HDC hdc,HWND hwnd) {
 	if (x_ <= pos.x && pos.x <= x_ + width_ && y_ <= pos.y && pos.y <= y_ + height_) {
 		COLORREF color_comp = GetPixel(hdc, pos.x, pos.y);
 		for (int i = 0; i < elements_name_list_.size(); ++i) {
-			if (color_comp == chart_colors_[elements_name_list_[i]]) {
+			if (color_comp == chart_colors_[chart_color_index__wstring+elements_name_list_[i]]) {
 				COLORREF old_text_color = SetTextColor(hdc, RGB(255, 255, 255));
 				COLORREF old_back_color = SetBkColor(hdc, color_comp);
 				RECT rt;

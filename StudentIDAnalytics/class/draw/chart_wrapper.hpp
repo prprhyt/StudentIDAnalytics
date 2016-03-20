@@ -20,6 +20,8 @@ private:
 	std::unordered_map<std::wstring, int> chart_elements_;
 	static std::unordered_map<std::wstring, COLORREF> chart_colors_;
 	static std::unordered_map<COLORREF, char> colors_index_;
+	static std::unordered_map<int, int> hue_range_index_;
+	std::wstring chart_color_index__wstring;
 public:
 	donuts_chart(int x, int y, int len,WCHAR[],WCHAR[]);
 	void set_chart_elements(student_id_data_node*);
