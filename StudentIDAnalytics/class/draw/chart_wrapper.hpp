@@ -7,6 +7,7 @@
 #include<map>
 #include<vector>
 #include<string>
+#include<random>
 #include<windows.h>
 #include"../../felicalib_wrapper/felicalib_sidacs_wrapper.hpp"
 
@@ -17,7 +18,8 @@ private:
 	WCHAR message_[256];
 	std::vector<std::wstring> elements_name_list_;
 	std::unordered_map<std::wstring, int> chart_elements_;
-	std::vector<COLORREF> colors;
+	static std::unordered_map<std::wstring, COLORREF> chart_colors_;
+	static std::unordered_map<COLORREF, char> colors_index_;
 public:
 	donuts_chart(int x, int y, int len,WCHAR[],WCHAR[]);
 	void set_chart_elements(student_id_data_node*);
@@ -26,4 +28,8 @@ public:
 
 };
 
+class color_convert {
+public:
+	COLORREF hsv_to_rgb(int, int, int);
+};
 #endif

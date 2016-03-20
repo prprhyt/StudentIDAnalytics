@@ -2,6 +2,9 @@
 
 using namespace std;
 
+unordered_map<wstring, COLORREF> donuts_chart:: chart_colors_;
+unordered_map<COLORREF, char> donuts_chart::colors_index_;
+
 donuts_chart::donuts_chart(int x, int y, int len,WCHAR rcvdata[],WCHAR msgdata[]) {
 	x_ = x;
 	y_ = y;
@@ -10,11 +13,6 @@ donuts_chart::donuts_chart(int x, int y, int len,WCHAR rcvdata[],WCHAR msgdata[]
 	radius_ = len / 2;
 	wsprintf(target_word_, _T("%s\0"), rcvdata);
 	wsprintf(message_, _T("%s\0"), msgdata);
-	colors.push_back(RGB(73, 115, 201));
-	colors.push_back(RGB(64,197,242));
-	colors.push_back(RGB(247, 187, 1));
-	colors.push_back(RGB(70, 87, 103));
-	colors.push_back(RGB(73, 215, 201));
 }
 
 void donuts_chart::set_chart_elements(student_id_data_node *node) {
@@ -45,16 +43,26 @@ void donuts_chart::set_chart_elements(student_id_data_node *node) {
 		temp_maps[chart_elements_[elements_name_list_[i]]*index_multiply + i] = elements_name_list_[i];//¸‡ƒ\[ƒg—p
 	}
 
+
+	color_convert color_conv;
+	random_device rnd;
+	mt19937 mt(rnd());
+	uniform_int_distribution<> rand_h(0, 359);
+	uniform_int_distribution<> rand_sv(170, 255);
 	for (map<long, wstring>::iterator it = temp_maps.begin(); it != temp_maps.end(); ++it) {
 		long key = it->first;
 		wstring val = it->second;
 		elements_name_list_[temp_count] = val;//ƒ\[ƒg‚µ‚½‚à‚Ì‚ğ‡‚É‘ã“ü
+		if (chart_colors_.find(val) == chart_colors_.end()) {
+			COLORREF temp_color = color_conv.hsv_to_rgb(rand_h(mt), rand_sv(mt), rand_sv(mt));
+			while (colors_index_.find(temp_color) != colors_index_.end()) {
+				temp_color = color_conv.hsv_to_rgb(rand_h(mt), rand_sv(mt), rand_sv(mt));
+			}
+			chart_colors_[val] = temp_color;
+			colors_index_[temp_color] = '\0';
+		}
 		++temp_count;
 	}
-	if (index_num==2|| index_num==6) {
-		++index_num;
-	}
-	++index_num;
 }
 
 HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚ÅƒAƒ“ƒ`ƒGƒCƒŠƒAƒX‚ğ‚©‚¯‚é
@@ -78,7 +86,7 @@ HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚Åƒ
 		x_end = width_ / 2-radius_*cos(pie_rad - M_PI / 2)+ x_;
 		y_begin = radius_*sin(temp_rad-M_PI / 2)+y_+height_/2;
 		y_end = radius_*sin(pie_rad - M_PI / 2) + y_+height_/2;
-		HBRUSH hBrush = CreateSolidBrush(colors[i]);
+		HBRUSH hBrush = CreateSolidBrush(chart_colors_[elements_name_list_[i]]);
 		HBRUSH hOldBrush_s= static_cast<HBRUSH>(SelectObject(hdc, hBrush));
 		Pie(hdc, x_, y_, x_+width_, y_+height_, x_begin, y_begin, x_end, y_end);
 		SelectObject(hdc, hBrush);
@@ -150,13 +158,12 @@ HDC donuts_chart::draw_donuts_chart(HDC hdc) {//TODO:ƒWƒƒƒM[‚ª–Ú—§‚Â‚Ì‚ÅGDI+‚Åƒ
 			rt = { 0,0,0,0 };
 			for (int k = 0; k < column_num; ++k) {
 				if (j + k < elements_name_list_.size()) {
-					SetBkColor(hdc, colors[j + k]);
+					SetBkColor(hdc, chart_colors_[elements_name_list_[j + k]]);
 					temp_wstring = elements_name_list_[j + k];
 					temp_rt.left += rt.right - rt.left + space_width;
 					DrawText(hdc, temp_wstring.c_str(), -1, &rt, DT_CALCRECT);
 					temp_rt.right= temp_rt.left+rt.right-rt.left;
 					temp_rt.bottom = rt.bottom - rt.top + temp_rt.top;
-					temp_wstring = elements_name_list_[j + k];
 					DrawText(hdc, temp_wstring.c_str(), -1, &temp_rt, DT_CENTER);
 				}
 				else {
@@ -198,13 +205,15 @@ HDC donuts_chart::draw_elements_details(HDC hdc,HWND hwnd) {
 	if (x_ <= pos.x && pos.x <= x_ + width_ && y_ <= pos.y && pos.y <= y_ + height_) {
 		COLORREF color_comp = GetPixel(hdc, pos.x, pos.y);
 		for (int i = 0; i < elements_name_list_.size(); ++i) {
-			if (color_comp == colors[i]) {
+			if (color_comp == chart_colors_[elements_name_list_[i]]) {
 				COLORREF old_text_color = SetTextColor(hdc, RGB(255, 255, 255));
 				COLORREF old_back_color = SetBkColor(hdc, color_comp);
 				RECT rt;
 				int text_width, text_height;
 				const int cursor_text_margin = 5;
-				wstring details_wstring = elements_name_list_[i] +_T(": ")+ to_wstring(chart_elements_[elements_name_list_[i]]);
+				WCHAR per[8];
+				_stprintf_s(per,_T("%6.2f\0"),static_cast<double>(100*chart_elements_[elements_name_list_[i]]) / static_cast<double>(sum_));
+				wstring details_wstring = elements_name_list_[i] +_T(": ")+ to_wstring(chart_elements_[elements_name_list_[i]])+_T("(")+per+_T("%)");
 				DrawText(hdc, details_wstring.c_str(), -1, &rt, DT_CALCRECT);
 				text_width = rt.right - rt.left;
 				text_height = rt.bottom - rt.top;
@@ -219,4 +228,53 @@ HDC donuts_chart::draw_elements_details(HDC hdc,HWND hwnd) {
 		}
 	}
 	return hdc;
+}
+
+COLORREF color_convert::hsv_to_rgb(int h, int s, int v) {
+	if (0 > h || h > 359 || 0 > s ||  s> 255 || 0 > v ||  v> 255) {
+		return 0;
+	}
+	double f;
+	int hi, m, n, k;
+	int rgb[3];
+
+	hi = h / 60.0;
+	f = static_cast<double>(h / 60.0) - hi;
+	m = static_cast<int>(v) * (1.0 - (s / 255.0));
+	n = static_cast<int>(v) * (1.0 - (s / 255.0) * f);
+	k = static_cast<int>(v) * (1.0 - (s / 255.0) * (1.0 - f));
+
+	switch (hi) {
+	case 0:
+		rgb[0] = v;
+		rgb[1] = k;
+		rgb[2] = m;
+		break;
+	case 1:
+		rgb[0] = n;
+		rgb[1] = v;
+		rgb[2] = m;
+		break;
+	case 2:
+		rgb[0] = m;
+		rgb[1] = v;
+		rgb[2] = k;
+		break;
+	case 3:
+		rgb[0] = m;
+		rgb[1] = n;
+		rgb[2] = v;
+		break;
+	case 4:
+		rgb[0] = k;
+		rgb[1] = m;
+		rgb[2] = v;
+		break;
+	case 5:
+		rgb[0] = v;
+		rgb[1] = m;
+		rgb[2] = n;
+		break;
+	}
+	return RGB(rgb[0], rgb[1], rgb[2]);
 }
