@@ -19,12 +19,6 @@
     <Filter Include="ヘッダー ファイル\felicalib">
       <UniqueIdentifier>{033f5cbf-dd95-4d58-8ff8-f5ed5c670378}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\felicalib_wrapper">
-      <UniqueIdentifier>{3fc7b026-7f6e-4f8e-b1b1-44a2876f37ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\felicalib_wrapper">
-      <UniqueIdentifier>{be37b17d-f4e2-4d1a-a2b2-5cdba613df42}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\class">
       <UniqueIdentifier>{fccc0a8a-8790-4f56-9ffc-48e7946c53b3}</UniqueIdentifier>
     </Filter>
@@ -36,6 +30,12 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\class\draw">
       <UniqueIdentifier>{589897c7-0327-496d-b059-f7b3dabd6a65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\felicalib_wrapper">
+      <UniqueIdentifier>{3fc7b026-7f6e-4f8e-b1b1-44a2876f37ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\felicalib_wrapper">
+      <UniqueIdentifier>{be37b17d-f4e2-4d1a-a2b2-5cdba613df42}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

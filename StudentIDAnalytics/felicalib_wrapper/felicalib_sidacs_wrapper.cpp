@@ -460,3 +460,52 @@ int student_id_data_tree::restore_student_id_data(student_id_data_node *node) {
 	fclose(fp);
 	return 0;
 }
+
+student_id_time_stamp_tree::student_id_time_stamp_tree() {
+	time_t current_t = time(NULL);
+	struct tm *c_t_p = localtime(&current_t);
+	current_date_ = to_wstring(c_t_p->tm_yday + 1900) + to_wstring(c_t_p->tm_mon + 1) + to_wstring(c_t_p->tm_mday);
+}
+
+void student_id_time_stamp_tree::add_time_stamp_list(WCHAR rcvdata[]) {
+	wstring student_id_wstring = rcvdata;
+	time_t current_t = time(NULL);
+	struct tm *c_t_p = localtime(&current_t);
+	current_date_ = to_wstring(c_t_p->tm_yday + 1900) + to_wstring(c_t_p->tm_mon + 1) + to_wstring(c_t_p->tm_mday);
+	wstring current_time = to_wstring(c_t_p->tm_hour) + to_wstring(c_t_p->tm_min) + to_wstring(c_t_p->tm_sec);
+	time_stamp_list[student_id_wstring].push_back(current_time);
+	return;
+}
+
+vector<std::wstring> student_id_time_stamp_tree::get_list_of_student_id_ranking(student_id_data_node *node) {
+	student_id_data_tree sidt_s;
+	vector<std::wstring> all_student_id_list = sidt_s.get_list_of_student_id_by_word(node, _T("????????"));
+	vector<std::wstring> temp_student_id_list(10,_T(""));
+	int rank_of_size[10] = {0};
+	int time_stamp_size=0,temp_size=0;
+	wstring temp_student_id=_T("");
+	for (int i = 0; i < all_student_id_list.size(); ++i) {
+		int match_num = -1;
+		time_stamp_size = time_stamp_list[all_student_id_list[i]].size();
+		for (int j = 0; j < 10; ++j) {
+			if (match_num == -1) {
+				if (time_stamp_size >= rank_of_size[j]) {
+					match_num = j;
+					temp_size = rank_of_size[j];
+					rank_of_size[j] = time_stamp_size;
+					temp_student_id = temp_student_id_list[j];
+					temp_student_id_list[j] = all_student_id_list[i];
+				}
+			}
+			else {
+				int temp_size_s = temp_size;
+				temp_size = rank_of_size[j];
+				rank_of_size[j] = temp_size_s;
+				wstring temp_student_id_s = temp_student_id;
+				temp_student_id = temp_student_id_list[j];
+				temp_student_id_list[j] = temp_student_id_s;
+			}
+		}
+	}
+	return temp_student_id_list;
+}

@@ -5,6 +5,9 @@
 #include<iterator>
 #include<vector>
 #include<algorithm>
+#include<map>
+#include<time.h>
+#include<string>
 #include<Windows.h>
 #include <imagehlp.h>
 #pragma comment(lib,"imagehlp.lib")
@@ -56,19 +59,31 @@ class student_id_data_tree {
 private:
 	int add_tree_node(student_id_data_node*, student_id_details);//ツリーにノードを追加する
 	void add_personal_num_list(student_id_data_node*, int);
-	int count_student_id_from_tree(student_id_data_node *node, student_id_details sids);
-	std::vector<std::wstring> enumerate_student_id_from_tree(student_id_data_node *node, student_id_details sids);
-	std::vector<std::wstring> enumerate_elements_from_tree(student_id_data_node *node, student_id_details sids);
+	int count_student_id_from_tree(student_id_data_node*, student_id_details);
+	std::vector<std::wstring> enumerate_student_id_from_tree(student_id_data_node*, student_id_details);
+	std::vector<std::wstring> enumerate_elements_from_tree(student_id_data_node*, student_id_details);
 public:
 	student_id_data_node* create_node(char[]);
 	student_id_data_node* delete_node(student_id_data_node*);
 	void add_tree_student_id(student_id_data_node*,WCHAR[]);
 	int get_number_of_student_id_by_word(student_id_data_node*,WCHAR[]);
-	std::vector<std::wstring> get_list_of_student_id_by_word(student_id_data_node *node, WCHAR rcvdata[]);
-	std::vector<std::wstring> get_list_of_elements_name_by_word(student_id_data_node *node, WCHAR rcvdata[]);
+	std::vector<std::wstring> get_list_of_student_id_by_word(student_id_data_node*, WCHAR[]);
+	std::vector<std::wstring> get_list_of_elements_name_by_word(student_id_data_node*, WCHAR[]);
 	int store_student_id_data(student_id_data_node*);
 	int restore_student_id_data(student_id_data_node*);
 };
+
+class student_id_time_stamp_tree {
+private:
+	std::wstring current_date_;
+public:
+	std::map<std::wstring, std::vector<std::wstring>> time_stamp_list;
+	std::vector<student_id_data_node> time_stamp_node_;
+	student_id_time_stamp_tree();
+	void add_time_stamp_list(WCHAR[]);
+	std::vector<std::wstring> get_list_of_student_id_ranking(student_id_data_node*);
+};
+
 
 #endif
 
