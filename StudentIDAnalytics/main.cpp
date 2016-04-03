@@ -17,6 +17,7 @@ donuts_chart dept_chart(50, 50, 300, _T("--??----"),_T("Dept."));
 donuts_chart enter_ad_chart(400, 50, 300,_T("?-------"), _T("Admission year."));
 donuts_chart six_ad_dept_chart(50, 400, 300, _T("6-??----"), _T("2016 students Dept."));
 donuts_chart class_chart(400, 400, 300, _T("----?---"), _T("students class."));
+rank_table student_id_rank_table(750, 50, 100, 700);
 
 int WINAPI WinMain(
 	HINSTANCE hInstance,
@@ -105,6 +106,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		SelectObject(h_comp_dc, h_comp_bmp);
 		ReleaseDC(hwnd, hdc);
 
+
 		//マルチスレッド
 		mThread = CreateThread(NULL, 0, pasori_thread_, hwnd, 0, &TId);
 		break;
@@ -145,6 +147,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		enter_ad_chart.draw_elements_details(h_comp_dc, hwnd);
 		six_ad_dept_chart.draw_elements_details(h_comp_dc, hwnd);
 		class_chart.draw_elements_details(h_comp_dc, hwnd);
+		student_id_rank_table.draw_rank_table(h_comp_dc);
 		BitBlt(hdc, 0, 0, client_rc.right, client_rc.bottom, h_comp_dc, 0, 0, SRCCOPY);
 		ReleaseDC(hwnd, hdc);
 		break;
@@ -182,6 +185,8 @@ DWORD WINAPI pasori_thread_(LPVOID	hwnd){//マルチスレッドで学生IDの読み取り待機
 			enter_ad_chart.set_chart_elements(o_node);
 			six_ad_dept_chart.set_chart_elements(o_node);
 			class_chart.set_chart_elements(o_node);
+			
+			student_id_rank_table.set_rank_table(o_node, StudentID);
 
 			InvalidateRect(static_cast<HWND>(hwnd), NULL, FALSE);
 			/*dept_chart.draw_donuts_chart(hdc);

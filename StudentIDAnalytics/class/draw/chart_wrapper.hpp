@@ -23,9 +23,9 @@ private:
 	static std::unordered_map<int, int> hue_range_index_;
 	std::wstring chart_color_index__wstring;
 public:
-	donuts_chart(int x, int y, int len,WCHAR[],WCHAR[]);
+	donuts_chart(int, int, int ,WCHAR[],WCHAR[]);
 	void set_chart_elements(student_id_data_node*);
-	HDC draw_donuts_chart(HDC hdc);
+	HDC draw_donuts_chart(HDC);
 	HDC draw_elements_details(HDC,HWND);
 
 };
@@ -33,5 +33,17 @@ public:
 class color_convert {
 public:
 	COLORREF hsv_to_rgb(int, int, int);
+};
+
+class rank_table {
+private:
+	int x_, y_, width_, height_;
+	std::vector<std::wstring> student_rank_list;
+	student_id_time_stamp_tree sitst;
+public:
+	rank_table(int, int, int ,int);
+	void set_rank_table(student_id_data_node*,WCHAR[]);
+	HDC draw_rank_table(HDC);
+
 };
 #endif

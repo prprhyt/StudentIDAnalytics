@@ -299,3 +299,37 @@ COLORREF color_convert::hsv_to_rgb(int h, int s, int v) {
 	}
 	return RGB(rgb[0], rgb[1], rgb[2]);
 }
+
+rank_table::rank_table(int x, int y, int width,int height) {
+	x_ = x;
+	y_ = y;
+	width_ = width;
+	height_ = height;
+}
+void rank_table::set_rank_table(student_id_data_node *node,WCHAR rcvdata[]) {
+	if (8 == lstrlen(rcvdata)) {
+		sitst.add_time_stamp_list(rcvdata);
+	}
+	student_rank_list = sitst.get_list_of_student_id_ranking(node);
+}
+
+HDC rank_table::draw_rank_table(HDC hdc) {
+	int height_margin = height_ / 10;
+	RECT rt;
+	int now_y_pos = y_;
+	for (int i = 0; i < student_rank_list.size(); ++i) {
+		int text_width = width_ ;
+		DrawText(hdc, student_rank_list[i].c_str(), -1, &rt, DT_CALCRECT);
+		if (text_width >= rt.right - rt.left) {
+			text_width = rt.right - rt.left;
+		}
+		int text_height = rt.bottom - rt.top;
+		rt.left = x_;
+		rt.right = x_ + text_width;
+		rt.top = now_y_pos + (height_margin- text_height)/2;
+		rt.bottom = rt.top + text_height;
+		now_y_pos += height_margin;
+		DrawText(hdc, student_rank_list[i].c_str(), -1, &rt, DT_CENTER);
+	}
+	return hdc;
+}
